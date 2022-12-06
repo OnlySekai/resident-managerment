@@ -7,6 +7,9 @@ import { TamtruModule } from './tamtru/tamtru.module';
 import { TamvangModule } from './tamvang/tamvang.module';
 import { ThongkeModule } from './thongke/thongke.module';
 import { DatabaseService } from './database.service';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { AppController } from './app.controller';
 
 @Global()
 @Module({
@@ -18,8 +21,11 @@ import { DatabaseService } from './database.service';
     TamtruModule,
     TamvangModule,
     ThongkeModule,
+    AuthModule,
+    UserModule,
   ],
   providers: [DatabaseService],
   exports: [DatabaseService],
+  controllers: [AppController],
 })
 export class AppModule {}

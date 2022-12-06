@@ -84,5 +84,7 @@ export class DatabaseService {
     return this.knex.from(`so_ho_khau ${isAlias ? `AS ${alias}` : ''}`);
   }
   public thiet_bi_table = this.knex.from('thiet_bi').as('tb');
-  public user_table = this.knex.from('user');
+  public user_table(isAlias = false, alias = 'u') {
+    return this.knex.from(`user ${isAlias ? `AS ${alias}` : ''}`);
+  }
 }

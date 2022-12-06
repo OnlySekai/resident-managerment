@@ -42,7 +42,6 @@ export class NhankhauService {
           this.db
             .nhan_khau_so_ho_khau_table()
             .whereIn('nhan_khau', ids)
-            .del()
             .transacting(trx),
         )
         .then(() => {

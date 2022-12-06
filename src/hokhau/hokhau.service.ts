@@ -45,26 +45,18 @@ export class HokhauService {
     return result;
   }
 
-  /*
-  input = [inputChuyenKhau]
-  */
   public async chuyenKhau(id: number, donChuyenKhau: DonChuyenKhauDto) {
-    const nhan_khau_ids = (
-      await this.database.getNhanKhauByHoKhau(id, { detail: false })
-    ).map((value) => value.nhan_khau_id);
+    // const nhan_khau_ids = (
+    //   await this.database.getNhanKhauByHoKhau(id, { detail: false })
+    // ).map((value) => value.nhan_khau_id);
     return this.database.knex.transaction((trx) => {
       this.database
         .nhan_khau_so_ho_khau_table()
-        .whereIn('nhan_khau_id', nhan_khau_ids)
+        .where('nhan_khau_id', id)
         .del()
         .transacting(trx)
         .then(() => {
-          return this.database.delByIds('so_ho_khau', id).transacting(trx);
-        })
-        .then(() => {
-          return this.database
-            .getByIds('nhan_khau', ...nhan_khau_ids)
-            .del('id')
+          return this.database.nhan_khau_table().where("id", id).update({isActive: false})
             .transacting(trx);
         })
         .then(() =>
