@@ -14,4 +14,11 @@ export class UserService {
   deleteUser(username: string) {
     return this.db.user_table().where('username', username).del()
   }
+  acceptUser(id: number, acceptUser?) {
+    return this.db.getByIds('user', id).update({trang_thai: 'PHE_DUYET', user_phe_duyet: acceptUser})
+  }
+  createUser(username, password) {
+    const hash = password
+    return this.db.user_table().insert({username, hash})
+  }
 }

@@ -7,4 +7,5 @@ export interface GiayKhaiSinhDto {
   ghi_chu: string;
   nguoi_khai_sinh: number;
   quan_he: string;
+  ho_khau_id: number;
 }

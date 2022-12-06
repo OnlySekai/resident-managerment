@@ -34,9 +34,9 @@ export class DatabaseService {
   public don_dinh_chinh_do_ho_khau_table = this.knex.from(
     'don_dinh_chinh_so_ho_khau',
   );
-  public don_dinh_chinh_nhan_khau_table = this.knex
-    .from('don_dinh_chinh_nhan_khau')
-    .as('dcnk');
+  public don_dinh_chinh_nhan_khau_table(isAlias = false, alias = 'ddcnk') {
+    return this.knex.from(`don_dinh_chinh_nhan_khau ${isAlias ? `AS ${alias}` : ''}`);
+  }
   public don_nhap_khau_table = this.knex.from('don_nhap_khau').as('dnk');
   public don_nhap_khau_nhap_cung_table = this.knex
     .from('don_nhap_khau_nhap_cung')
