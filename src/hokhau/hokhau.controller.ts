@@ -8,17 +8,23 @@ import {
   Post,
   Put,
   Req,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { HasRoles } from 'src/auth/has-roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { DatabaseService } from 'src/database.service';
 import { DonChuyenKhauDto } from 'src/dto/donChuyenKhau.dto';
 import { DonDinhChinhHoKhauDto } from 'src/dto/donDinhChinhHoKhau.dto';
 import { DonTachKhauCungDto } from 'src/dto/donTachKhauCung.dto';
 import { HokhauDto } from 'src/dto/hoKhau.dto';
+import { Role } from 'src/model/role.enum';
 import { InputTachKhauDto } from './dto/inputTachKhau.dto';
 import { SearchHoKhauDto } from './dto/searchHokhau.dto';
 import { HokhauService } from './hokhau.service';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('hokhau')
 export class HokhauController {
   constructor(private readonly hoKhauService: HokhauService) {}
@@ -39,18 +45,34 @@ export class HokhauController {
     const hoKhaus = await this.hoKhauService.timHoKhau(searchParams);
     return { data: hoKhaus, total: hoKhaus.length };
   }
+  @Delete()
+  async chuyenHoKhau(@Body() body: DonChuyenKhauDto) {
+    await this.hoKhauService.chuyenKhau(body);
+    return { message: 'Them don chuyen khau thanh cong' };
+  }
+  @HasRoles(Role.Admin)
   @Delete(':id')
-  async chuyenHoKhau(@Param('id') id: number, @Body() body: DonChuyenKhauDto) {
-    await this.hoKhauService.chuyenKhau(id, body);
-    return { message: 'Chuyen khau thanh cong' };
+  async acceptChuyenKhau(@Param('id') id: number) {
+    console.log(id)
+    return this.hoKhauService.acceptChuyenKhau(id)
   }
   @Put()
   tachKhau(@Body() body: InputTachKhauDto) {
     return this.hoKhauService.tachKhau(body);
   }
+  
+  @HasRoles(Role.Admin)
+  @Put(':id')
+  acceptTachKhau(@Param('id') id: number, @Req() req) {
+    return this.hoKhauService.acceptTachKhau(id, req.user.userId)
+  }
+  @Patch()
+  suaKhau( @Body() body: DonDinhChinhHoKhauDto) {
+    return this.hoKhauService.suaKhau(body)
+  }
   @Patch(':id')
-  suaKhau(@Param('id') id: number, @Body() body: DonDinhChinhHoKhauDto) {
-    return { message: 'Đính chính nhânh khẩu thành công' };
+  acceptSuaKhau(@Param('id') id: number, @Req() req) {
+    return this.hoKhauService.acceptSuaKhau(id, req.user.userId)
   }
   @Get('test')
   test() {

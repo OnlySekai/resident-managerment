@@ -1,0 +1,555 @@
+{
+	"info": {
+		"_postman_id": "3655a03e-55d6-4d36-a0aa-9b8b89e3020a",
+		"name": "quan ly nhan khau",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "so ho khau",
+			"item": [
+				{
+					"name": "/hokhau?query : tim ho khau",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/hokhau?diaChi=bach",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hokhau"
+							],
+							"query": [
+								{
+									"key": "diaChi",
+									"value": "bach"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/hokhau/:id : chuyen khau",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dai_dien_id\": 1,\n  \"ngay_chuyen\": \"2022-12-12\",\n  \"so_ho_khau_cu\": 39,\n  \"so_ho_khau_moi\": 345,\n  \"ngay_lam_don\": \"2022-12-10\",\n  \"ngay_phe_duyet\": \"2022-12-10\",\n  \"trang_thai\": \"done\",\n  \"ghi_chu\": \"string\",\n  \"ly_do\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/hokhau",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hokhau"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/hokhau : tach khau",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"donTachKhau\": { \n        \"chu_ho_id\": 2,\n        \"so_ho_khau_cu\": 41,\n        \"so_ho_khau_moi\": 39,\n        \"ngay_tach\": \"2022-1-1\",\n        \"ly_do\": \"string\",\n        \"ngay_lam_don\": \"2022-3-2\",\n        \"trang_thai\": \"123e4r\",\n        \"dia_chi_moi\": \"string\"\n    },\n    \"donTachKhauCung\": [\n        {\n            \"nhan_khau_id\": 66,\n            \"quan_he\": \"con\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/hokhau/",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hokhau",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/hokhau : tao ho khau",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dia_chi\": \"bach Khoa\",\n    \"chu_ho_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/hokhau",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"hokhau"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accept chuyen khau",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/hokhau/3",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"hokhau",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accept tach khau",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/hokhau/19",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"hokhau",
+								"19"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "nhan khau",
+			"item": [
+				{
+					"name": "/nhankhau : khai sinh/them",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nhanKhauInfo\": {\n        \"cccd\": \"123\",\n        \"ho\": \"string\",\n        \"ten_dem\": \"string\",\n        \"ten\": \"string\",\n        \"ngay_sinh\": \"2002/2/25\",\n        \"bi_danh\": \"string\",\n        \"noi_sinh\": \"string\",\n        \"nguyen_quan\": \"string\",\n        \"dan_toc\": \"string\",\n        \"ton_giao\": \"string\",\n        \"nghe_nhiep\": \"string\",\n        \"noi_lam_viec\": \"string\",\n        \"cccd_ngay_cap\": \"2002/09/02\",\n        \"cccd_noi_cap\": \"string\",\n        \"so_dien_thoai\": \"123456\",\n        \"email\": \"string\"\n    },\n    \"hokhau\": 39,\n    \"quanHeChuHo\": \"con\",\n    \"giayKhaiSinh\": {\n        \"bo_id\": 1,\n        \"me_id\": 2,\n        \"ngay_khai_sinh\": \"2002/2/2\",\n        \"noi_dang_ki\": \"string\",\n        \"ghi_chu\": \"string\",\n        \"nguoi_khai_sinh\": 1,\n        \"quan_he\": \"string\",\n        \"ho_khau_id\": 1\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/nhankhau",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"nhankhau"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nhankhau/dinh-chinh:id accept dinh chinh",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/nhankhau/dinh-chinh/2",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"nhankhau",
+								"dinh-chinh",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nhankhau/dinh-chinh dinh chinh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"nhan_khau_id\": 2,\n        \"ghi_chu\": \"string\",\n        \"trang_thai\": \"string\",\n        \"ngay_lam_don\": \"2018/2/12\",\n        \"mo_ta\": {\n            \"thong_tin_cu\": {\n                \"cccd\": \"1233\"\n            },\n            \"thong_tin_moi\": {\n                \"cccd\": \"1111\"\n            }\n        }\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/nhankhau/dinh-chinh",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"nhankhau",
+								"dinh-chinh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/nhankhau:id  thongtin nhan khau",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/nhankhau/1",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"nhankhau",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/nhankhau :khaitu/xoa",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ngay_khai_tu\": \"2022/10/2\",\n    \"ngay_lam_giay\": \"2022/10/2\",\n    \"nguoi_lam_giay_id\": \"1\",\n    \"quan_he\": \"ke thu\",\n    \"ghi_chu\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/nhankhau/65",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"nhankhau",
+								"65"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "/nhankhau",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/nhankhau",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"nhankhau"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/accept phe duyet tai khoan",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/user/accept/2",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"user",
+								"accept",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/new: tao user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"tuan\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/user/new",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"user",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/login: login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.json().access_token",
+									"pm.collectionVariables.set(\"token\", token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"tuan\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/auth/login",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tam tru",
+			"item": [
+				{
+					"name": "them tam tru",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nhanKhau\": {\n        \"cccd\": \"123\",\n        \"ho\": \"string\",\n        \"ten_dem\": \"string\",\n        \"ten\": \"string\",\n        \"ngay_sinh\": \"2002/2/25\",\n        \"bi_danh\": \"string\",\n        \"noi_sinh\": \"string\",\n        \"nguyen_quan\": \"string\",\n        \"dan_toc\": \"string\",\n        \"ton_giao\": \"string\",\n        \"nghe_nhiep\": \"string\",\n        \"noi_lam_viec\": \"string\",\n        \"cccd_ngay_cap\": \"2002/09/02\",\n        \"cccd_noi_cap\": \"string\",\n        \"so_dien_thoai\": \"123456\",\n        \"email\": \"string\"\n    },\n    \"donTamTru\": {\n        \"nhan_khau_id\": 2,\n        \"ngay_lam_don\": \"2022/2/2\",\n        \"ngay_tam_tru\": \"2022/3/2\",\n        \"ly_do\": \"nguoi yeu\",\n        \"dia_chi_thuong_chu\": \"ttes\",\n        \"dia_chi_tam_chu\": \"tam tru de\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/tamtru",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tamtru"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "accept tam tru",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/tamtru/4",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tamtru",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tam vang",
+			"item": [
+				{
+					"name": "tam vang",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nhan_khau_id\": 2,\n    \"ngay_lam_don\": \"2022/2/2\",\n    \"dia_chi_tam_chu\": \"tuan\",\n    \"ly_do\": \"nguoi yeu\",\n    \"so_ho_khau_id\": 41\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/tamvang",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tamvang"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PHE DUYET TAM TRU",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/tamvang/1",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tamvang",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/hokhau/test",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"hokhau",
+						"test"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "qlnk",
+			"value": "http://localhost:3000",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

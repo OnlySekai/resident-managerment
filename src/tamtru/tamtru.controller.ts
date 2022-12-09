@@ -6,10 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { DonTamTruDto } from 'src/dto/donTamTru.dto';
 import { TamtruService } from './tamtru.service';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('tamtru')
 export class TamtruController {
   constructor(private readonly tamTruService: TamtruService) {}
@@ -20,6 +25,10 @@ export class TamtruController {
       message: 'them thanh cong';
     });
   }
+  @Post(':id')
+  acceptTamTru(@Param('id') id: number, @Req() req) {
+    return this.tamTruService.acceptTamTru(id, req.user.userId)
+  } 
   @Patch('id')
   suaTamTru(@Param('id') id: number, @Body() body: DonTamTruDto) {
     return { message: 'Sửa tạm trú thành công' };

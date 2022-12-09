@@ -30,7 +30,9 @@ export class DatabaseService {
     else result = result.select('nhan_khau_id');
     return result;
   }
-  public don_chuyen_khau_table = this.knex.from('don_chuyen_khau').as('dck');
+  public don_chuyen_khau_table(isAlias = false, alias = 'dck') {
+    return this.knex.from(`don_chuyen_khau ${isAlias ? `AS ${alias}` : ''}`);
+  };
   public don_dinh_chinh_do_ho_khau_table = this.knex.from(
     'don_dinh_chinh_so_ho_khau',
   );
@@ -45,10 +47,10 @@ export class DatabaseService {
     return this.knex.from(`don_tach_khau ${isAlias ? `AS ${alias}` : ''}`);
   }
   public don_tach_khau_tach_cung_table(isAlias = false, alias = 'dtkc') {
-    return this.knex.from(`don_tach_khau_cung ${isAlias ? `AS ${alias}` : ''}`);
+    return this.knex.from(`don_tach_khau_tach_cung ${isAlias ? `AS ${alias}` : ''}`);
   }
   public don_tam_tru_table(isAlias = false, alias = 'dtt') {
-    return this.knex.from(`don_tam)tru ${isAlias ? `AS ${alias}` : ''}`);
+    return this.knex.from(`don_tam_tru ${isAlias ? `AS ${alias}` : ''}`);
   }
   public don_tam_vang_table(isAlias = false, alias = 'dtv') {
     return this.knex.from(`don_tam_vang ${isAlias ? `AS ${alias}` : ''}`);

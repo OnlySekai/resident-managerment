@@ -4,6 +4,9 @@ import { DonChuyenKhauDto } from 'src/dto/donChuyenKhau.dto';
 import { HokhauDto } from 'src/dto/hoKhau.dto';
 import { SearchHoKhauDto } from './dto/searchHokhau.dto';
 import { InputTachKhauDto } from './dto/inputTachKhau.dto';
+import { pheDuyet } from '../utils';
+import { NhankhauController } from 'src/nhankhau/nhankhau.controller';
+import { DonDinhChinhHoKhauDto } from 'src/dto/donDinhChinhHoKhau.dto';
 
 @Injectable()
 export class HokhauService {
@@ -45,63 +48,114 @@ export class HokhauService {
     return result;
   }
 
-  public async chuyenKhau(id: number, donChuyenKhau: DonChuyenKhauDto) {
+  public async chuyenKhau(donChuyenKhau: DonChuyenKhauDto) {
     // const nhan_khau_ids = (
     //   await this.database.getNhanKhauByHoKhau(id, { detail: false })
     // ).map((value) => value.nhan_khau_id);
-    return this.database.knex.transaction((trx) => {
-      this.database
-        .nhan_khau_so_ho_khau_table()
-        .where('nhan_khau_id', id)
-        .del()
-        .transacting(trx)
-        .then(() => {
-          return this.database.nhan_khau_table().where("id", id).update({isActive: false})
-            .transacting(trx);
+    return this.database.don_chuyen_khau_table().insert(donChuyenKhau);
+  }
+
+  public async acceptChuyenKhau(id: number) {
+    return this.database.knex.transaction(async (trx) => {
+      const changeStatus = this.database
+        .editById('don_chuyen_khau', id, { trang_thai: 'PHE_DUYET' })
+        .transacting(trx);
+      const getNhanKhauId = this.database
+        .getByIds('don_chuyen_khau', id)
+        .select('dai_dien_id')
+        .transacting(trx);
+      const rs = await Promise.all([getNhanKhauId, changeStatus]);
+      console.log(rs);
+      const idNhanKhau = rs[0][0].dai_dien_id;
+      const unActiveNhanKhau = this.database
+        .editById('nhan_khau', idNhanKhau, {
+          isActive: false,
         })
-        .then(() =>
-          this.database.don_chuyen_khau_table
-            .insert(donChuyenKhau)
-            .transacting(trx),
-        )
-        .then(trx.commit)
-        .catch(trx.rollback);
+        .transacting(trx);
+      const deleteOutNhanKhauHoKhau = this.database
+        .nhan_khau_so_ho_khau_table()
+        .where('nhan_khau_id', idNhanKhau)
+        .del()
+        .transacting(trx);
+      await Promise.all([unActiveNhanKhau, deleteOutNhanKhauHoKhau]);
     });
   }
 
-  public async tachKhau(don: InputTachKhauDto) {
+  public tachKhau(don: InputTachKhauDto) {
     const { donTachKhau, donTachKhauCung } = don;
     if (donTachKhau) {
       const { chu_ho_id, so_ho_khau_cu, dia_chi_moi } = donTachKhau;
       if (!chu_ho_id || !so_ho_khau_cu || !dia_chi_moi)
         throw new HttpException(
-          `${chu_ho_id ? '' : 'Không có chủ hô'}\n${
+          `${chu_ho_id ? '' : 'Không có chủ hô'}${
             so_ho_khau_cu ? '' : 'Không có hộ khẩu cũ'
-          }\n${dia_chi_moi ? '' : 'Không có địa chỉ mới'}
-          }`,
+          }${dia_chi_moi ? '' : 'Không có địa chỉ mới'}
+          `,
           400,
         );
-      await this.database.knex.transaction((trx) => {
-        this.database
-          .so_ho_khau_table()
-          .insert({ dia_chi: dia_chi_moi, chu_ho_id }, 'id')
-          .transacting(trx)
-          .then((ho_khau_id) => {
-            return this.database
-              .nhan_khau_so_ho_khau_table()
-              .where('nhan_khau_id', chu_ho_id)
-              .update({ so_ho_khau_id: ho_khau_id, quan_he_chu_ho: 'Chủ hộ' })
-              .transacting(trx)
-              .then(() => {
-                return this.database
-                  .don_tach_khau_table()
-                  .insert({ ...donTachKhau, so_ho_khau_moi: ho_khau_id })
-                  .transacting(trx);
-              });
-          })
-          .then(trx.commit)
-          .catch(trx.rollback);
+      return this.database.knex.transaction(async (trx) => {
+        const insertTachKhau = await this.database
+          .don_tach_khau_table()
+          .insert(donTachKhau)
+          .transacting(trx);
+        const newDonTachKhauCung = donTachKhauCung.map((value) => {
+          return {
+            ...value,
+            don_tach_khau_id: insertTachKhau[0],
+          };
+        });
+        const insertTachKhauCung =
+          donTachKhauCung.length > 0
+            ? await this.database
+                .don_tach_khau_tach_cung_table()
+                .insert(newDonTachKhauCung)
+                .transacting(trx)
+            : {};
       });
     }
+  }
+
+  public async acceptTachKhau(id: number, userId: number, note?: string) {
+    return this.database.knex.transaction(async (trx) => {
+      const acceptTachKhauQuery = this.database
+        .editById('don_tach_khau', id, {
+          ...pheDuyet(userId, note),
+        })
+        .transacting(trx);
+      const hoKhauMoiQuery = this.database
+        .getByIds('don_tach_khau', id)
+        .select('so_ho_khau_moi')
+        .transacting(trx);
+      const nhanKhauIdsQuery = this.database
+        .don_tach_khau_tach_cung_table()
+        .where('don_tach_khau_id', id)
+        .select('nhan_khau_id', 'quan_he')
+        .transacting(trx);
+      let [nhanKhauIds, hoKhauMoi, acceptTachKhau] = await Promise.all([
+        nhanKhauIdsQuery,
+        hoKhauMoiQuery,
+        acceptTachKhauQuery,
+      ]);
+      hoKhauMoi = hoKhauMoi[0].so_ho_khau_moi;
+      if (nhanKhauIds.length > 0) {
+        let queryUpdate = this.database.nhan_khau_so_ho_khau_table();
+        nhanKhauIds.forEach((value) => {
+          queryUpdate = queryUpdate
+            .where('nhan_khau_id', value.nhan_khau_id)
+            .update({
+              so_ho_khau_id: hoKhauMoi,
+              quan_he_chu_ho: value.quan_he,
+            });
+        });
+        await queryUpdate.transacting(trx);
+      }
+    });
+  }
+  //TODO: them sua khau accept sua khau
+  public async suaKhau(don: DonDinhChinhHoKhauDto) {
+
+  }
+  public async acceptSuaKhau(id: number, userId: number, note?: string){
+
   }
 }
