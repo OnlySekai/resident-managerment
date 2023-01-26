@@ -44,9 +44,7 @@ export class DatabaseService {
     );
   }
   public don_nhap_khau_table(isAlias = false, alias = 'dnk') {
-    return this.knex.from(
-      `don_nhap_khau ${isAlias ? `AS ${alias}` : ''}`,
-    );
+    return this.knex.from(`don_nhap_khau ${isAlias ? `AS ${alias}` : ''}`);
   }
   public don_nhap_khau_nhap_cung_table(isAlias = false, alias = 'dnknc') {
     return this.knex.from(
@@ -90,18 +88,23 @@ export class DatabaseService {
   public phien_su_dung_table(isAlias = false, alias = 'psd') {
     return this.knex.from(`phien_su_dung ${isAlias ? `AS ${alias}` : ''}`);
   }
+
   public tai_nguyen_table(isAlias = false, alias = 'tn') {
     return this.knex.from(`tai_nguyen ${isAlias ? `AS ${alias}` : ''}`);
   }
+
   public sao_ke_table(isAlias = false, alias = 'sk') {
     return this.knex.from(`sao_ke ${isAlias ? `AS ${alias}` : ''}`);
   }
+
   public tai_nguyen_type_table(isAlias = false, alias = 'tnt') {
-    return this.knex.from(`tai_nguyen_type ${isAlias ? `AS ${alias}` : ''}`);
+    return this.knex.from(`loai_tai_nguyen ${isAlias ? `AS ${alias}` : ''}`);
   }
+
   public phieu_muon_table(isAlias = false, alias = 'pm') {
     return this.knex.from(`phieu_muon ${isAlias ? `AS ${alias}` : ''}`);
   }
+
   public don_chuyen_khau_nhan_khau_table(isAlias = false, alias = 'dcknk') {
     return this.knex.from(
       `don_chuyen_khau_nhan_khau ${isAlias ? `AS ${alias}` : ''}`,
@@ -111,6 +114,6 @@ export class DatabaseService {
   public getNhanKhauIdsHoKhau(hoKhauId: number) {
     return this.nhan_khau_so_ho_khau_table()
       .where('so_ho_khau_id', hoKhauId)
-      .then((value) => value.map(value => value['nhan_khau_id']));
+      .then((value) => value.map((value) => value['nhan_khau_id']));
   }
 }

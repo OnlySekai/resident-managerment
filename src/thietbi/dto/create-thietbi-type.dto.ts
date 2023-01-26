@@ -1,4 +1,4 @@
-export class CreateThietbiType {
+export class CreateThietbiTypeDto {
   id?: number;
   name: string;
   thu_phi: number;

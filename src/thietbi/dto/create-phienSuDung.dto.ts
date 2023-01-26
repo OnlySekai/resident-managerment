@@ -5,6 +5,6 @@ export class CreatePhienSuDungDto {
   ngay_muon: Date;
   ngay_hen_tra: Date;
   ngay_tra: Date;
-  phieu_id: number;
+  phieu_muon: number;
   ghi_chu: string;
 }

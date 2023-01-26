@@ -3,3 +3,14 @@ export enum DON_STATUS {
   TAO_MOI = 'TAO_MOI',
   TU_CHOI = 'TU_CHOI',
 }
+
+export enum THIET_BI_STATUS {
+  CREATE = 'CREATE',
+  PAID = 'PAID',
+  REJECT = 'REJECT',
+  CANCEL = 'CANCEL',
+  USING = 'USING',
+  DONE = 'DONE',
+  MISSING = 'MISSING',
+  LOSS = 'LOSS',
+}

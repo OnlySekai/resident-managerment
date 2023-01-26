@@ -1,3 +1,5 @@
+import { THIET_BI_STATUS } from 'src/common/constant';
+
 export class CreatePhieuMuonDto {
   id?: number;
   cccd: string;
@@ -8,15 +10,7 @@ export class CreatePhieuMuonDto {
   user_phe_duyet?: number;
   ngay_phe_duyet?: number;
   ly_do: string;
-  trang_thai:
-    | 'CREATE'
-    | 'PAID'
-    | 'REJECT'
-    | 'CANCEL'
-    | 'USING'
-    | 'DONE'
-    | 'MISSING'
-    | 'LOSS';
+  trang_thai: THIET_BI_STATUS;
   sao_ke_dang_ki?: number;
   sao_ke_tra?: number;
 }

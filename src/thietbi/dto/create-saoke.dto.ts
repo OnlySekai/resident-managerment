@@ -5,5 +5,5 @@ export class CreateSaokeDto {
   tien_thoi: number;
   user_thu: number;
   ngay_gio: Date;
-  ghi_chu: string;
+  ghi_chu?: string;
 }

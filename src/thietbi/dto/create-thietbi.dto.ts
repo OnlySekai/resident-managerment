@@ -3,6 +3,6 @@ export class CreateThietbiDto {
   mo_ta: string;
   ghi_chu: string;
   ngay_them: Date;
-  tinh_trang: string;
+  tinh_trang: number;
   loai_id: number;
 }
