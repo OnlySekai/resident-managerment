@@ -275,7 +275,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{qlnk}}/nhankhau?limit=20&condition={active: true}",
+							"raw": "{{qlnk}}/nhankhau?limit=20&condition={\"active\": true}",
 							"host": [
 								"{{qlnk}}"
 							],
@@ -289,7 +289,7 @@
 								},
 								{
 									"key": "condition",
-									"value": "{active: true}"
+									"value": "{\"active\": true}"
 								}
 							]
 						}
@@ -602,7 +602,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nhanKhau\": {\n        \"cccd\": \"2509\",\n        \"ho\": \"string\",\n        \"ten_dem\": \"string\",\n        \"ten\": \"string\",\n        \"ngay_sinh\": \"2002/2/25\",\n        \"bi_danh\": \"string\",\n        \"noi_sinh\": \"string\",\n        \"nguyen_quan\": \"string\",\n        \"dan_toc\": \"string\",\n        \"ton_giao\": \"string\",\n        \"nghe_nhiep\": \"string\",\n        \"noi_lam_viec\": \"string\",\n        \"cccd_ngay_cap\": \"2002/09/02\",\n        \"cccd_noi_cap\": \"string\",\n        \"so_dien_thoai\": \"123456\",\n        \"email\": \"string\"\n    },\n    \"donTamTru\": {\n        \"nhan_khau_id\": 2,\n        \"ngay_lam_don\": \"2022/2/2\",\n        \"ngay_tam_tru\": \"2022/3/2\",\n        \"ly_do\": \"nguoi yeu\",\n        \"dia_chi_thuong_tru\": \"ttes\",\n        \"dia_chi_tam_chu\": \"tam tru de\"\n    }\n}",
+							"raw": "{\n    \"nhanKhau\": {\n        \"cccd\": \"2509\",\n        \"ho\": \"string\",\n        \"ten_dem\": \"string\",\n        \"ten\": \"string\",\n        \"ngay_sinh\": \"2002/2/25\",\n        \"bi_danh\": \"string\",\n        \"noi_sinh\": \"string\",\n        \"nguyen_quan\": \"string\",\n        \"dan_toc\": \"string\",\n        \"ton_giao\": \"string\",\n        \"nghe_nhiep\": \"string\",\n        \"noi_lam_viec\": \"string\",\n        \"cccd_ngay_cap\": \"2002/09/02\",\n        \"cccd_noi_cap\": \"string\",\n        \"so_dien_thoai\": \"123456\",\n        \"email\": \"string\"\n    },\n    \"donTamTru\": {\n        \"nhan_khau_id\": 2,\n        \"ngay_lam_don\": \"2022/2/2\",\n        \"ngay_tam_tru\": \"2022/3/2\",\n        \"ly_do\": \"nguoi yeu\",\n        \"dia_chi_thuong_tru\": \"ttes\",\n        \"dia_chi_tam_tru\": \"tam tru de\",\n        \"ngay_het_han\": \"2023-12-12\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -627,13 +627,13 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{qlnk}}/tamtru/7",
+							"raw": "{{qlnk}}/tamtru/2",
 							"host": [
 								"{{qlnk}}"
 							],
 							"path": [
 								"tamtru",
-								"7"
+								"2"
 							]
 						}
 					},
@@ -651,7 +651,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nhan_khau_id\": 2,\n    \"ngay_lam_don\": \"2022/2/2\",\n    \"dia_chi_tam_chu\": \"tuan\",\n    \"ly_do\": \"nguoi yeu\",\n    \"so_ho_khau_id\": 41\n}",
+							"raw": "{\n    \"nhan_khau_id\": 81,\n    \"ngay_lam_don\": \"2022/2/2\",\n    \"dia_chi_tam_chu\": \"tuan\",\n    \"ly_do\": \"nguoi yeu\",\n    \"so_ho_khau_id\": 41,\n    \"ngay_het_han\": \"2022/4/12\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -691,6 +691,203 @@
 			]
 		},
 		{
+			"name": "tai nguyen",
+			"item": [
+				{
+					"name": "/tai-nguyen/kha-dung get tai nguyen kha dung",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen/kha-dung?type=1&startDate=2023-1-30&endDate=2023-2-10",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen",
+								"kha-dung"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "1"
+								},
+								{
+									"key": "startDate",
+									"value": "2023-1-30"
+								},
+								{
+									"key": "endDate",
+									"value": "2023-2-10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen get tai nguyen",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen/type get tai nguyen type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen/type",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen",
+								"type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen tao tai nguyen",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mo_ta\": \"string\",\n    \"ghi_chu\": \"string\",\n    \"tinh_trang\": 10,\n    \"loai_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen/type tao tai nguyen type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"nhan van hoa\",\n    \"thu_phi\": 200,\n    \"thu_phi_coc\": 100,\n    \"gia_tri\": 10000,\n    \"la_cong_trinh\": true,\n    \"xuat_xu\": \"string\",\n    \"mo_ta\": \"string\",\n    \"ghi_chu\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen/type",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen",
+								"type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen/muon muon thiet bi",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phienSuDung\": [\n        {\n            \"tai_nguyen_id\": 2,\n            \"mo_ta\": \"string\",\n            \"ngay_muon\": \"2023-1-26T18:30:00\",\n            \"ngay_hen_tra\": \"2023-1-28T18:30:00\",\n            \"ghi_chu\": \"string\"\n        }\n    ],\n    \"phieuMuon\": {\n        \"cccd\": \"123456789\",\n        \"ho_va_ten\": \"test phieu muon\",\n        \"so_dien_thoai\": \"12345678\",\n        \"email\": \"minhtuan@gmaul.com\",\n        \"ly_do\": \"cuoi\"\n    },\n    \"saoKe\": {\n        \"tien_thu\": 100,\n        \"tien_tra\": 200,\n        \"tien_thoi\": 100,\n        \"user_thu\": 1,\n        \"ngay_gio\": \"2023-1-26\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen/muon",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen",
+								"muon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen/muon get phieu muon",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen/muon",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen",
+								"muon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tai-nguyen/tra",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phieuMuonId\": 2,\n    \"note\": [\n        {\n            \"taiNguyenId\": 2,\n            \"tinh_trang\": 8,\n            \"mo_ta\": \"xuoc_dam\"\n        }\n    ],\n    \"saoKe\": {\n        \"tien_thu\": 100,\n        \"tien_tra\": 200,\n        \"tien_thoi\": 100,\n        \"user_thu\": 1,\n        \"ngay_gio\": \"2023-1-26\"\n    },\n    \"ngayTra\": \"2023-2-10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{qlnk}}/tai-nguyen/tra",
+							"host": [
+								"{{qlnk}}"
+							],
+							"path": [
+								"tai-nguyen",
+								"tra"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "/hokhau/don/:id getDon",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -708,7 +905,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{qlnk}}/hokhau/don/all?type=don_dinh_chinh_nhan_khau&status=",
+					"raw": "{{qlnk}}/hokhau/don/all?type=don_tam_vang&status=",
 					"host": [
 						"{{qlnk}}"
 					],
@@ -720,7 +917,7 @@
 					"query": [
 						{
 							"key": "type",
-							"value": "don_dinh_chinh_nhan_khau"
+							"value": "don_tam_vang"
 						},
 						{
 							"key": "status",
