@@ -10,16 +10,31 @@ import { pheDuyet } from 'src/utils';
 export class NhankhauService {
   constructor(private readonly db: DatabaseService) {}
   searchNhanKhau({ limit = 10, page = 1, condition }) {
-    console.log();
-    return this.db
+    const { ten, cccd, active = true } = condition;
+    const queryName = ten
+      ? `MATCH(ho, ten_dem , ten ) against('${ten
+          .split(' ')
+          .join('* ')}*' in boolean mode)`
+      : '';
+    const getNhanKhuQuery = this.db
       .nhan_khau_table()
-      .where(
-        condition.condition
-          ? JSON.parse(condition.condition)
-          : { active: true },
-      )
-      .limit(limit)
-      .offset(limit * (page - 1));
+      .whereRaw(queryName)
+      .whereILike('cccd', cccd ? `%${11}%` : '%')
+      .where('active', active);
+    return [
+      this.db.knex
+        .select('nk.*', 'shk.*')
+        .fromRaw(
+          `(${getNhanKhuQuery.limit(limit).offset(limit * (page - 1))}) as nk`,
+        )
+        .leftJoin(
+          'nhan_khau_so_ho_khau as nkshk',
+          'nk.id',
+          'nkshk.nhan_khau_id',
+        )
+        .leftJoin('so_ho_khau as shk', 'shk.id', 'nkshk.so_ho_khau_id'),
+      getNhanKhuQuery.count('id'),
+    ];
   }
 
   themNhanKhau(nhanhKhauInfo: nhanKhauDto, option) {

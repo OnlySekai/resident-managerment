@@ -22,41 +22,52 @@ import { ThongKeNhanKhauDto } from '../thongke/dto/thongKeNhanKhau.dto';
 import { ThemNhanKhauDto } from './dto/themNhanKhau.dto';
 import { NhankhauService } from './nhankhau.service';
 
-@UseGuards(AuthGuard('jwt'),RolesGuard)
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('nhankhau')
 export class NhankhauController {
-  constructor( private readonly nhanKhauService: NhankhauService) {}
+  constructor(private readonly nhanKhauService: NhankhauService) {}
   @Post()
   khaiSinh(@Body() body: ThemNhanKhauDto) {
-    const {nhanKhauInfo, ...restBody } = body
-    return this.nhanKhauService.themNhanKhau(nhanKhauInfo, restBody)
+    const { nhanKhauInfo, ...restBody } = body;
+    return this.nhanKhauService.themNhanKhau(nhanKhauInfo, restBody);
   }
   @Get()
   async searchNhanKhau(@Req() req: Request) {
-    const {limit, page, ...searchParams} =req.query
-    console.log(limit)
-    const data = await this.nhanKhauService.searchNhanKhau({limit: +limit , page: +page, condition: searchParams})
-    return {data, total: data.length}
+    const { limit, page, ...searchParams } = req.query;
+    console.log(req.query);
+    return Promise.all(
+      this.nhanKhauService.searchNhanKhau({
+        limit: +limit,
+        page: +page,
+        condition: searchParams,
+      }),
+    ).then((rs) => {
+      const [data, [total]] = rs;
+      return {
+        data,
+        total: total['count(`id`)'],
+      };
+    });
   }
   @Delete(':id')
   khaiTu(@Param('id') id: number, @Body() body: GiayKhaiTuDto) {
-    return this.nhanKhauService.xoaNhanKhau(id, body)
+    return this.nhanKhauService.xoaNhanKhau(id, body);
   }
 
   @Patch('dinh-chinh')
   dinhChinhNhanKhau(@Body() body: DondinhChinhNhanKhauDto) {
-    return this.nhanKhauService.dinhChinh(body)
+    return this.nhanKhauService.dinhChinh(body);
   }
 
   @HasRoles(Role.Admin)
   @Patch('dinh-chinh/:id')
   acceptDinhChinh(@Param('id') id: number, @Req() req) {
-    return this.nhanKhauService.acceptDinhChinh(id, req.user.useId)
+    return this.nhanKhauService.acceptDinhChinh(id, req.user.useId);
   }
 
   @Get(':id')
   thongTinNhanKhau(@Param('id') id: number) {
-    return this.nhanKhauService.searchNhanKhau({condition: {id}})
+    return this.nhanKhauService.searchNhanKhau({ condition: { id } });
   }
 
   @Get('thongke')
