@@ -19,7 +19,7 @@ export class NhankhauService {
     const getNhanKhuQuery = this.db
       .nhan_khau_table()
       .whereRaw(queryName)
-      .whereILike('cccd', cccd ? `%${11}%` : '%')
+      .whereILike('cccd', cccd ? `%${cccd}%` : '%')
       .where('active', active);
     return [
       this.db.knex
