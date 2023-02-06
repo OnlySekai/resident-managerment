@@ -10,20 +10,25 @@ import { pheDuyet } from 'src/utils';
 export class NhankhauService {
   constructor(private readonly db: DatabaseService) {}
   searchNhanKhau({ limit = 10, page = 1, condition }) {
-    const { ten, cccd, active = true } = condition;
+    let { ten, cccd, active = true, ids } = condition;
+    if (ids!== undefined && !Array.isArray(ids)) ids = [ids];
+    console.log(ids)
     const queryName = ten
       ? `MATCH(ho, ten_dem , ten ) against('${ten
           .split(' ')
           .join('* ')}*' in boolean mode)`
       : '';
-    const getNhanKhuQuery = this.db
+    let getNhanKhuQuery = this.db
       .nhan_khau_table()
       .whereRaw(queryName)
       .whereILike('cccd', cccd ? `%${cccd}%` : '%')
-      .where('active', active);
+      .where('active', active)
+    getNhanKhuQuery = ids
+      ? getNhanKhuQuery.whereIn('id', ids)
+      : getNhanKhuQuery;
     return [
       this.db.knex
-        .select('nk.*', 'shk.*')
+        .select('shk.*', 'nk.*')
         .fromRaw(
           `(${getNhanKhuQuery.limit(limit).offset(limit * (page - 1))}) as nk`,
         )
