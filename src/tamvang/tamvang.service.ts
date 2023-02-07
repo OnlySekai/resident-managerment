@@ -23,10 +23,11 @@ export class TamvangService {
       .getByIds('don_tam_vang', id)
       .where({ trang_thai: DON_STATUS.TAO_MOI });
     if (!don) throw new BadRequestException('Don Tam Vang Khong Ton Tai');
+    console.log(don.nhan_khau_id);
     return this.db.knex.transaction(async (trx) => {
       await Promise.all([
         this.db
-          .getByIds('nhan_khau', don.nhanKhauId)
+          .getByIds('nhan_khau', don.nhan_khau_id)
           .update({ active: false })
           .transacting(trx),
         this.db
