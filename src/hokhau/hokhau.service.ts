@@ -45,14 +45,18 @@ export class HokhauService {
   }
 
   public async timHoKhau(query: SearchHoKhauDto) {
-    const { cccd, tenChuHo, diaChi } = query;
+    const { cccd, tenChuHo, diaChi, id } = query;
     let querySql = this.database
+
       .so_ho_khau_table(true)
       .select(
         'shk.*',
         this.database.knex.raw(`concat(nk.ho,nk.ten_dem,nk.ten) As ten_chu_ho`),
       )
       .innerJoin('nhan_khau AS nk', 'nk.id', 'shk.chu_ho_id');
+      console.log(id)
+    if (id || id ===0) 
+       { console.log('in');querySql =querySql.where('shk.id', id)}
     if (cccd) querySql = querySql.where('chu_ho_id', cccd);
     if (tenChuHo)
       querySql = querySql.where('ten_chu_ho', 'LIKE', `%${tenChuHo}%`);
@@ -205,6 +209,7 @@ export class HokhauService {
                 .transacting(trx)
             : {};
       });
+      
     }
   }
 
