@@ -15,7 +15,12 @@ export enum THIET_BI_STATUS {
   LOSS = 'LOSS',
 }
 
-export const queryName = (ten: string) =>
-  `MATCH(ho, ten_dem , ten ) against('${ten
+export const queryName = (ten: string, table) =>
+  `MATCH(${table}.ho, ${table}.ten_dem , ${table}.ten ) against('${ten
     .split(' ')
     .join('* ')}*' in boolean mode)`;
+
+export const getIds = (ids) => {
+  if (ids && !Array.isArray(ids)) return [ids];
+  return ids;
+};

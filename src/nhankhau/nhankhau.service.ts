@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DON_STATUS, queryName } from 'src/common/constant';
+import { DON_STATUS, getIds, queryName } from 'src/common/constant';
 import { DatabaseService } from 'src/database.service';
 import { DondinhChinhNhanKhauDto } from 'src/dto/donDinhChinhNhanKhau.dto';
 import { GiayKhaiTuDto } from 'src/dto/giayKhaiTu.dto';
@@ -26,28 +26,53 @@ export class NhankhauService {
     const normalQuery = this.omitField(this.searchKhaiSinh);
     let queryKhaiSinh = this.db
       .giay_khai_sinh_table(true)
-      .distinct('nk.*', 'gks.*')
-      .distinct(
-        'concat(bo.ho, bo.ten_dem, bo.ten) as ten_bo',
-        'bo.cccd as cccd_bo',
-        'bo.id as bo_id',
+      .select('gks.*')
+      .select({
+        nhan_khau_id: 'nk.id',
+        cccd: 'nk.cccd',
+        ten: this.db.knex.raw(`concat(nk.ho, ' ', nk.ten_dem, ' ', nk.ten)`),
+      })
+      .select({
+        cccd_bo: 'bo.cccd',
+        ten_bo: this.db.knex.raw(`concat(bo.ho, ' ', bo.ten_dem, ' ', bo.ten)`),
+      })
+      .select({
+        cccd_nguoi_khai_sinh: 'nks.cccd',
+        ten_nguoi_khai_sinh: this.db.knex.raw(
+          `concat(nks.ho, ' ', nks.ten_dem, ' ', nks.ten)`,
+        ),
+      })
+      .select(
+        ' me.cccd as cccd_me',
+        this.db.knex.raw(
+          `concat(me.ho, ' ', me.ten_dem, ' ', me.ten) as ten_me`,
+        ),
       )
-      .distinct(
-        'concat(me.ho, me.ten_dem, me.ten) as ten_me, me.cccd as cccd_me',
-        'me.id as me_id',
-      )
-      .leftJoin('nhan_khau as nk', 'id', 'nk.id')
+      .leftJoin('nhan_khau as nk', 'nhan_khau_id', 'nk.id')
       .leftJoin('nhan_khau as me', 'me.id', 'nk.id')
       .leftJoin('nhan_khau as bo', 'bo.id', 'nk.id')
+      .leftJoin('nhan_khau as nks', 'nguoi_khai_sinh', 'nks.id')
       .where(normalQuery);
 
-    let { cccd, cccd_bo, cccd_me, ten, ten_bo, ten_me } = query;
+    const { cccd, cccd_bo, cccd_me, ten, ten_bo, ten_me, id, bo_id, me_id } =
+      query;
     if (cccd) queryKhaiSinh = queryKhaiSinh.whereILike('nk.cccd', `%${cccd}%`);
     if (cccd_bo)
       queryKhaiSinh = queryKhaiSinh.whereILike('bo.cccd', `%${cccd_bo}%`);
     if (cccd_me)
       queryKhaiSinh = queryKhaiSinh.whereILike('me.cccd', `%${cccd_me}%`);
-    if (ten) queryKhaiSinh = queryKhaiSinh.whereRaw(queryName(ten));
+    if (ten) queryKhaiSinh = queryKhaiSinh.whereRaw(queryName(ten, 'nk'));
+    if (cccd) queryKhaiSinh = queryKhaiSinh.whereILike('nk.cccd', `%${cccd}%`);
+    if (ten_bo) queryKhaiSinh = queryKhaiSinh.whereRaw(queryName(ten_bo, 'bo'));
+    if (cccd_bo)
+      queryKhaiSinh = queryKhaiSinh.whereILike('bo.cccd', `%${cccd_bo}%`);
+    if (ten_me) queryKhaiSinh = queryKhaiSinh.whereRaw(queryName(ten_me, 'me'));
+    if (cccd_me)
+      queryKhaiSinh = queryKhaiSinh.whereILike('me.cccd', `%${cccd_me}%`);
+    if (id) queryKhaiSinh = queryKhaiSinh.whereIn('nk.id', getIds(id));
+    console.log(getIds(bo_id));
+    if (bo_id) queryKhaiSinh = queryKhaiSinh.whereIn('bo_id', getIds(bo_id));
+    if (me_id) queryKhaiSinh = queryKhaiSinh.whereIn('me_id', getIds(me_id));
     return queryKhaiSinh;
   }
   searchNhanKhau({ limit = 10, page = 1, condition }) {
