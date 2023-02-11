@@ -12,17 +12,37 @@ import { UpdateThietbiDto } from './dto/update-thietbi.dto';
 import { Role } from 'src/model/role.enum';
 import { CreateThietbiTypeDto } from './dto/create-thietbi-type.dto';
 import { THIET_BI_STATUS } from 'src/common/constant';
-
+import { omit } from 'lodash/fp';
 @Injectable()
 export class ThietbiService {
   constructor(private readonly db: DatabaseService) {}
-
-  getTaiNguyenType(condition?: Object) {
-    return this.db.tai_nguyen_type_table().where(condition);
+  readonly omitField = omit(['name', 'id']);
+  getTaiNguyenType(condition?: any) {
+    let { id, name } = condition;
+    const normalCondition = this.omitField(condition);
+    let query = this.db.tai_nguyen_type_table().where(normalCondition);
+    if (id && !Array.isArray(id)) {
+      id = [id];
+    }
+    if (id) query = query.whereIn('id', id);
+    if (name) query = query.whereILike('name', `%${name}%`);
+    return query;
   }
 
-  getTaiNguyen(condition?: Object) {
-    return this.db.tai_nguyen_table().where(condition);
+  getTaiNguyen(condition?: any) {
+    const normalCondition = this.omitField(condition);
+    let query = this.db
+      .tai_nguyen_table(true)
+      .select('ltn.*', 'tn.*')
+      .leftJoin('loai_tai_nguyen as ltn', 'loai_id', 'ltn.id')
+      .where(normalCondition);
+    let {id, name} =condition
+    if (id && !Array.isArray(id)) {
+      id = [id];
+    }
+    if (id) query = query.whereIn('tn.id', id);
+    if (name) query = query.whereILike('name', `%${name}%`);
+    return query;
   }
 
   async getPhieuMuon() {

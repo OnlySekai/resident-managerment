@@ -1,18 +1,59 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DON_STATUS } from 'src/common/constant';
+import { DON_STATUS, queryName } from 'src/common/constant';
 import { DatabaseService } from 'src/database.service';
 import { DondinhChinhNhanKhauDto } from 'src/dto/donDinhChinhNhanKhau.dto';
 import { GiayKhaiTuDto } from 'src/dto/giayKhaiTu.dto';
 import { nhanKhauDto } from 'src/dto/nhanKhau.dto';
 import { pheDuyet } from 'src/utils';
-
+import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
+import { omit } from 'lodash/fp';
 @Injectable()
 export class NhankhauService {
+  readonly omitField = omit([
+    'name',
+    'ten',
+    'ten_bo',
+    'ten_me',
+    'cccd',
+    'cccd_bo',
+    'cccd_me',
+    'id',
+    'id_bo',
+    'id_me',
+  ]);
   constructor(private readonly db: DatabaseService) {}
+  searchKhaiSinh(query: searchKhaiSinh) {
+    const normalQuery = this.omitField(this.searchKhaiSinh);
+    let queryKhaiSinh = this.db
+      .giay_khai_sinh_table(true)
+      .distinct('nk.*', 'gks.*')
+      .distinct(
+        'concat(bo.ho, bo.ten_dem, bo.ten) as ten_bo',
+        'bo.cccd as cccd_bo',
+        'bo.id as bo_id',
+      )
+      .distinct(
+        'concat(me.ho, me.ten_dem, me.ten) as ten_me, me.cccd as cccd_me',
+        'me.id as me_id',
+      )
+      .leftJoin('nhan_khau as nk', 'id', 'nk.id')
+      .leftJoin('nhan_khau as me', 'me.id', 'nk.id')
+      .leftJoin('nhan_khau as bo', 'bo.id', 'nk.id')
+      .where(normalQuery);
+
+    let { cccd, cccd_bo, cccd_me, ten, ten_bo, ten_me } = query;
+    if (cccd) queryKhaiSinh = queryKhaiSinh.whereILike('nk.cccd', `%${cccd}%`);
+    if (cccd_bo)
+      queryKhaiSinh = queryKhaiSinh.whereILike('bo.cccd', `%${cccd_bo}%`);
+    if (cccd_me)
+      queryKhaiSinh = queryKhaiSinh.whereILike('me.cccd', `%${cccd_me}%`);
+    if (ten) queryKhaiSinh = queryKhaiSinh.whereRaw(queryName(ten));
+    return queryKhaiSinh;
+  }
   searchNhanKhau({ limit = 10, page = 1, condition }) {
     let { ten, cccd, active = true, ids } = condition;
-    if (ids!== undefined && !Array.isArray(ids)) ids = [ids];
-    console.log(ids)
+    if (ids !== undefined && !Array.isArray(ids)) ids = [ids];
+    console.log(ids);
     const queryName = ten
       ? `MATCH(ho, ten_dem , ten ) against('${ten
           .split(' ')
@@ -22,7 +63,7 @@ export class NhankhauService {
       .nhan_khau_table()
       .whereRaw(queryName)
       .whereILike('cccd', cccd ? `%${cccd}%` : '%')
-      .where('active', active)
+      .where('active', active);
     getNhanKhuQuery = ids
       ? getNhanKhuQuery.whereIn('id', ids)
       : getNhanKhuQuery;

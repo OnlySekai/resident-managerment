@@ -16,9 +16,9 @@ import { HasRoles } from 'src/auth/has-roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { DondinhChinhNhanKhauDto } from 'src/dto/donDinhChinhNhanKhau.dto';
 import { GiayKhaiTuDto } from 'src/dto/giayKhaiTu.dto';
-import { nhanKhauDto } from 'src/dto/nhanKhau.dto';
 import { Role } from 'src/model/role.enum';
 import { ThongKeNhanKhauDto } from '../thongke/dto/thongKeNhanKhau.dto';
+import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
 import { ThemNhanKhauDto } from './dto/themNhanKhau.dto';
 import { NhankhauService } from './nhankhau.service';
 
@@ -26,6 +26,10 @@ import { NhankhauService } from './nhankhau.service';
 @Controller('nhankhau')
 export class NhankhauController {
   constructor(private readonly nhanKhauService: NhankhauService) {}
+  @Get('khai-sinh')
+  getKhaiSinh(@Query() query: searchKhaiSinh) {
+    return this.nhanKhauService.searchKhaiSinh(query);
+  }
   @Post()
   khaiSinh(@Body() body: ThemNhanKhauDto) {
     const { nhanKhauInfo, ...restBody } = body;

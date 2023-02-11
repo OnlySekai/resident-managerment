@@ -14,3 +14,8 @@ export enum THIET_BI_STATUS {
   MISSING = 'MISSING',
   LOSS = 'LOSS',
 }
+
+export const queryName = (ten: string) =>
+  `MATCH(ho, ten_dem , ten ) against('${ten
+    .split(' ')
+    .join('* ')}*' in boolean mode)`;
