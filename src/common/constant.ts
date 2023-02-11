@@ -24,3 +24,5 @@ export const getIds = (ids) => {
   if (ids && !Array.isArray(ids)) return [ids];
   return ids;
 };
+
+export const test = {}
