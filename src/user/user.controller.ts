@@ -37,8 +37,9 @@ export class UserController {
 
   @HasRoles(Role.Admin)
   @Post('new')
-  taoUser(@Body() body) {
-    return this.usersService.createUser(body.username, body.password);
+  taoUser(@Req() req, @Body() body: selfUpdateUserDto) {
+    const user = req.user as UserPayloadDto;
+    return this.usersService.createUser(user, body);
   }
 
   @Patch('update')

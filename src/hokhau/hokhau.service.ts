@@ -14,11 +14,13 @@ import { pheDuyet } from '../utils';
 import { NhankhauController } from 'src/nhankhau/nhankhau.controller';
 import { DonDinhChinhHoKhauDto } from 'src/dto/donDinhChinhHoKhau.dto';
 import { queryGetDonDto } from 'src/common/queryGetDon.dto';
-import { DON_STATUS } from 'src/common/constant';
+import { DON_STATUS, reject } from 'src/common/constant';
 import { InputChuyenKhauDto } from './dto/inputChuyenKhau.dto';
 import { ByteLengthQueuingStrategy } from 'node:stream/web';
 import { InnputDonNhapKhauDto } from './dto/inputNhapKhau.dto';
-
+import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
+import { omit } from 'lodash/fp';
+import { DonTachKhauDto } from 'src/dto/donTachKhau.dto';
 @Injectable()
 export class HokhauService {
   constructor(private readonly database: DatabaseService) {}
@@ -54,9 +56,11 @@ export class HokhauService {
         this.database.knex.raw(`concat(nk.ho,nk.ten_dem,nk.ten) As ten_chu_ho`),
       )
       .innerJoin('nhan_khau AS nk', 'nk.id', 'shk.chu_ho_id');
-      console.log(id)
-    if (id || id ===0) 
-       { console.log('in');querySql =querySql.where('shk.id', id)}
+    console.log(id);
+    if (id || id === 0) {
+      console.log('in');
+      querySql = querySql.where('shk.id', id);
+    }
     if (cccd) querySql = querySql.where('chu_ho_id', cccd);
     if (tenChuHo)
       querySql = querySql.where('ten_chu_ho', 'LIKE', `%${tenChuHo}%`);
@@ -71,6 +75,17 @@ export class HokhauService {
       return value;
     });
     return Promise.all(result);
+  }
+
+  async rejectChuyenKhau(user: UserPayloadDto, id: number) {
+    const [don] = (await this.database
+      .don_chuyen_khau_table()
+      .where({ id, status: DON_STATUS.TAO_MOI })) as DonChuyenKhauDto[];
+    if (!don) throw new NotFoundException('Khong tim thay don');
+    return this.database
+      .don_chuyen_khau_table()
+      .where({ id, status: DON_STATUS.TAO_MOI })
+      .update(reject(user.sub));
   }
 
   public async chuyenKhau(inputChuyenKhau: InputChuyenKhauDto) {
@@ -160,6 +175,17 @@ export class HokhauService {
     });
   }
 
+  async rejectTachKhau(user: UserPayloadDto, id: number) {
+    const [don] = (await this.database
+      .don_tach_khau_table()
+      .where({ id, status: DON_STATUS.TAO_MOI })) as DonTachKhauDto[];
+    if (!don) throw new NotFoundException('Khong tim thay don');
+    return this.database
+      .don_tach_khau_table()
+      .where({ id, status: DON_STATUS.TAO_MOI })
+      .update(reject(user.sub));
+  }
+
   public async tachKhau(don: InputTachKhauDto) {
     const { donTachKhau, donTachKhauCung } = don;
     if (donTachKhau) {
@@ -209,7 +235,6 @@ export class HokhauService {
                 .transacting(trx)
             : {};
       });
-      
     }
   }
 
@@ -261,8 +286,25 @@ export class HokhauService {
       }
     });
   }
-  //TODO: them sua khau accept sua khau
+
+  async rejectSuakhau(user: UserPayloadDto, id: number) {
+    const [don] = await this.database
+      .getByIds('don_dinh_chinh_so_ho_khau', id)
+      .where({ status: DON_STATUS.TAO_MOI });
+    if (!don) throw new NotFoundException('Khong tim thay don');
+    return this.database
+      .getByIds('don_dinh_chinh_so_ho_khau', id)
+      .update(reject(user.sub));
+  }
+
   public async suaKhau(don: DonDinhChinhHoKhauDto) {
+    const [soHoKhauCu] = await this.database.getByIds(
+      'so_ho_khau',
+      don.so_ho_khau_id,
+    );
+    const changeField = JSON.parse(don.mo_ta);
+    if (!soHoKhauCu) throw new NotFoundException('Khong tim thay ho khau');
+    don.mo_ta = JSON.stringify(omit(['id', 'chu_ho_id'])(changeField));
     return this.database
       .don_dinh_chinh_so_ho_khau_table()
       .insert({ ...don, trang_thai: 'TAO_MOI' });
@@ -291,6 +333,14 @@ export class HokhauService {
         })
         .transacting(trx);
     });
+  }
+
+  async rejectNhapKhau(user: UserPayloadDto, id: number) {
+    const [don] = await this.database
+      .getByIds('don_nhap_khau', id)
+      .where({ status: DON_STATUS.TAO_MOI });
+    if (!don) throw new NotFoundException('Khong tim thay don');
+    return this.database.getByIds('don_nhap_khau', id).update(reject(user.sub));
   }
 
   async nhapKhau(nhapKhauInput: InnputDonNhapKhauDto) {

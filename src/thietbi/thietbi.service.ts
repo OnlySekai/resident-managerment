@@ -5,10 +5,8 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database.service';
 import { CreateThietbiDto } from './dto/create-thietbi.dto';
-import { CreatePhienSuDungDto } from './dto/create-phienSuDung.dto';
 import { MuonDto } from './dto/muon.dto';
 import { TraDto } from './dto/tra.dto';
-import { UpdateThietbiDto } from './dto/update-thietbi.dto';
 import { Role } from 'src/model/role.enum';
 import { CreateThietbiTypeDto } from './dto/create-thietbi-type.dto';
 import { THIET_BI_STATUS } from 'src/common/constant';
@@ -36,7 +34,7 @@ export class ThietbiService {
       .select('ltn.*', 'tn.*')
       .leftJoin('loai_tai_nguyen as ltn', 'loai_id', 'ltn.id')
       .where(normalCondition);
-    let {id, name} =condition
+    let { id, name } = condition;
     if (id && !Array.isArray(id)) {
       id = [id];
     }
@@ -174,21 +172,4 @@ export class ThietbiService {
           ),
       );
   }
-
-  findAll() {
-    return `This action returns all thietbi`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} thietbi`;
-  }
-
-  update(id: number, updateThietbiDto: UpdateThietbiDto) {
-    return `This action updates a #${id} thietbi`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} thietbi`;
-  }
-  private async checkValidPhien(phiens: Array<CreatePhienSuDungDto>) {}
 }

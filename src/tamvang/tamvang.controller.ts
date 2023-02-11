@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { DonTamVangDto } from 'src/dto/donTamVang.dto';
 import { TamvangService } from './tamvang.service';
@@ -22,6 +23,12 @@ export class TamvangController {
   @Post()
   async themTamVang(@Body() body: DonTamVangDto) {
     return this.tamVangService.themTamVang(body);
+  }
+
+  @Delete(':id')
+  rejectTamVang(@Req() req, @Param('id') id: number) {
+    const user = req.user as UserPayloadDto;
+    return this.tamVangService.rejectTamVang(user, id);
   }
 
   @Post(':id')

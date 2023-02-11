@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { NotFoundError } from 'rxjs';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
+import { COMMON_STATUS } from 'src/common/constant';
 import { DatabaseService } from 'src/database.service';
 import { userDto } from 'src/dto/user.dto';
 import { Role } from 'src/model/role.enum';
@@ -26,7 +27,7 @@ export class UserService {
   updateByUsername(username: string, payload: userDto) {
     return this.db.user_table().where('username', username).update(payload);
   }
-  
+
   async updateUser(user: UserPayloadDto, payload: selfUpdateUserDto) {
     const { userId, repassword, password: hash, ...restData } = payload;
     const [getUser] = (await this.db.getByIds(
@@ -49,8 +50,16 @@ export class UserService {
       .getByIds('user', id)
       .update({ trang_thai: 'PHE_DUYET', user_phe_duyet: acceptUser });
   }
-  createUser(username, password) {
-    const hash = password;
-    return this.db.user_table().insert({ username, hash });
+  createUser(user: UserPayloadDto, payload: selfUpdateUserDto) {
+    const { password, repassword, id, ...restData } = payload;
+    if (password !== repassword)
+      throw new UnauthorizedException('Repassword khong dung');
+    return this.db.user_table().insert({
+      ...restData,
+      ngay_phe_duyet: new Date(),
+      ngay_dang_ki: new Date(),
+      trang_thai: COMMON_STATUS.PHE_DUYET,
+      user_phe_duyet: user.sub,
+    });
   }
 }

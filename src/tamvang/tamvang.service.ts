@@ -3,7 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DON_STATUS } from 'src/common/constant';
+import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
+import { DON_STATUS, reject } from 'src/common/constant';
 import { DatabaseService } from 'src/database.service';
 import { DonTamVangDto } from 'src/dto/donTamVang.dto';
 import { pheDuyet } from 'src/utils';
@@ -11,6 +12,13 @@ import { pheDuyet } from 'src/utils';
 @Injectable()
 export class TamvangService {
   constructor(private readonly db: DatabaseService) {}
+  async rejectTamVang(user: UserPayloadDto, id: number) {
+    const [don] = await this.db
+      .getByIds('don_tam_vang', id)
+      .where({ status: DON_STATUS.TAO_MOI });
+    if (!don) throw new NotFoundException('Khong tim thay don');
+    return this.db.getByIds('don_tam_vang', id).update(reject(user.sub));
+  }
   async themTamVang(don: DonTamVangDto) {
     const { nhan_khau_id } = don;
     const [nhanKhau] = await this.db.getByIds('nhan_khau', nhan_khau_id);

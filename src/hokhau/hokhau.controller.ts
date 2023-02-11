@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 import { HasRoles } from 'src/auth/has-roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { queryGetDonDto } from 'src/common/queryGetDon.dto';
@@ -70,15 +71,27 @@ export class HokhauController {
   }
 
   @HasRoles(Role.Admin)
+  @Patch('sua-khau/tu-choi/:id')
+  rejectSuaKhau(@Req() req, @Param('id') id: number) {
+    const user = req.user as UserPayloadDto;
+    return this.hoKhauService.rejectSuakhau(user, id);
+  }
+
+  @HasRoles(Role.Admin)
   @Get('don/:id')
   getDonsuaKhau(@Query() query: queryGetDonDto, @Param('id') id: any) {
     if (id == 'all') return this.hoKhauService.getDon(query);
   }
 
+  @Delete('chuyen-khau/tu-choi/:id')
+  rejectChuyenKhau(@Req() req, @Param('id') id: number) {
+    const user = req.user as UserPayloadDto;
+    return this.hoKhauService.rejectChuyenKhau(user, id);
+  }
+  @HasRoles(Role.Admin)
   @Delete()
   async chuyenHoKhau(@Body() body: InputChuyenKhauDto) {
     return this.hoKhauService.chuyenKhau(body);
-    return { message: 'Them don chuyen khau thanh cong' };
   }
 
   @HasRoles(Role.Admin)
@@ -86,6 +99,11 @@ export class HokhauController {
   async acceptChuyenKhau(@Param('id') id: number, @Req() req) {
     console.log(id);
     return this.hoKhauService.acceptChuyenKhau(id, req.user.userId);
+  }
+
+  @Post('tach-khau/tu-choi/:id')
+  rejectTachKhau(@Req() req, @Param('id') id: number) {
+    return this.hoKhauService.rejectTachKhau(req.user, id);
   }
   @Put()
   tachKhau(@Body() body: InputTachKhauDto) {
@@ -106,6 +124,10 @@ export class HokhauController {
       .insert({ chu_ho_id: 2, dia_chi: 'test' });
   }
 
+  @Post('nhap-khau/tu-choi/:id')
+  rejectNhapKhau(@Req() req, @Param('id') id: number) {
+    return this.hoKhauService.rejectNhapKhau(req.user, id);
+  }
   @Post()
   nhapKhau(@Body() inputNhapKhau: InnputDonNhapKhauDto) {
     return this.hoKhauService.nhapKhau(inputNhapKhau);

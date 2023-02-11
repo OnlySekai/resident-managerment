@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DON_STATUS, getIds, queryName } from 'src/common/constant';
+import { DON_STATUS, getIds, queryName, reject } from 'src/common/constant';
 import { DatabaseService } from 'src/database.service';
 import { DondinhChinhNhanKhauDto } from 'src/dto/donDinhChinhNhanKhau.dto';
 import { GiayKhaiTuDto } from 'src/dto/giayKhaiTu.dto';
@@ -8,6 +8,7 @@ import { pheDuyet } from 'src/utils';
 import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
 import { omit } from 'lodash/fp';
 import { searchKhaiTuDto } from './dto/searchKhaiTu.dto';
+import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 @Injectable()
 export class NhankhauService {
   readonly omitField = omit([
@@ -211,6 +212,16 @@ export class NhankhauService {
     });
   }
 
+  async rejectDinhChinh(user: UserPayloadDto, id: number) {
+    const [don] = await this.db
+      .getByIds('don_dinh_chinh_nhan_khau', id)
+      .where({ trang_thai: DON_STATUS.TAO_MOI });
+    if (!don)
+      throw new NotFoundException('Khong tim thay don dinh chinh nhan khau');
+    return this.db
+      .getByIds('don_dinh_chinh_nhan_khau', id)
+      .update(reject(user.sub));
+  }
   async dinhChinh(don: DondinhChinhNhanKhauDto) {
     const [nhanKhau] = await this.db.getByIds('nhan_khau', don.nhan_khau_id);
     if (!nhanKhau) throw new NotFoundException('Khong ton tai nhan khau');

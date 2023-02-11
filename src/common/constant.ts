@@ -4,6 +4,12 @@ export enum DON_STATUS {
   TU_CHOI = 'TU_CHOI',
 }
 
+export enum COMMON_STATUS {
+  TAO_MOI = 'TAO_MOI',
+  PHE_DUYET = 'PHE_DUYET',
+  TU_CHOI = 'TU_CHOI',
+}
+
 export enum THIET_BI_STATUS {
   CREATE = 'CREATE',
   PAID = 'PAID',
@@ -26,4 +32,13 @@ export const getIds = (ids) => {
   return ids;
 };
 
-export const test = {}
+export const reject = (userId, ghi_chu?) => {
+  return {
+    user_phe_duyet: userId,
+    ghi_chu,
+    ngay_phe_duyet: new Date(),
+    trang_thai: COMMON_STATUS,
+  };
+};
+
+export const test = {};

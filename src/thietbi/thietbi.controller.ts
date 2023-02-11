@@ -67,24 +67,4 @@ export class ThietbiController {
   timThietBiKhaDung(@Query() query) {
     return this.thietbiService.findAllTaiNguyenKhaDung(query);
   }
-
-  @Get()
-  findAll() {
-    return this.thietbiService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.thietbiService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateThietbiDto: UpdateThietbiDto) {
-    return this.thietbiService.update(+id, updateThietbiDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.thietbiService.remove(+id);
-  }
 }

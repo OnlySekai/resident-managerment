@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 import { HasRoles } from 'src/auth/has-roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { DondinhChinhNhanKhauDto } from 'src/dto/donDinhChinhNhanKhau.dto';
@@ -73,6 +74,13 @@ export class NhankhauController {
   @Patch('dinh-chinh/:id')
   acceptDinhChinh(@Param('id') id: number, @Req() req) {
     return this.nhanKhauService.acceptDinhChinh(id, req.user.useId);
+  }
+
+  @HasRoles(Role.Admin)
+  @Patch('dinh-chinh/tu-choi/:id')
+  rejectDinhChinh(@Req() req, @Param('id') id: number) {
+    const user = req.user as UserPayloadDto;
+    return this.nhanKhauService.rejectDinhChinh(user, id);
   }
 
   @Get(':id')
