@@ -17,6 +17,7 @@ export enum THIET_BI_STATUS {
 
 export const queryName = (ten: string, table) =>
   `MATCH(${table}.ho, ${table}.ten_dem , ${table}.ten ) against('${ten
+    .trim()
     .split(' ')
     .join('* ')}*' in boolean mode)`;
 

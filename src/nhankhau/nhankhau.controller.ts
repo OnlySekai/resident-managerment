@@ -19,6 +19,7 @@ import { GiayKhaiTuDto } from 'src/dto/giayKhaiTu.dto';
 import { Role } from 'src/model/role.enum';
 import { ThongKeNhanKhauDto } from '../thongke/dto/thongKeNhanKhau.dto';
 import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
+import { searchKhaiTuDto } from './dto/searchKhaiTu.dto';
 import { ThemNhanKhauDto } from './dto/themNhanKhau.dto';
 import { NhankhauService } from './nhankhau.service';
 
@@ -26,6 +27,10 @@ import { NhankhauService } from './nhankhau.service';
 @Controller('nhankhau')
 export class NhankhauController {
   constructor(private readonly nhanKhauService: NhankhauService) {}
+  @Get('khai-tu')
+  getKhaiTu(@Query() query: searchKhaiTuDto) {
+    return this.nhanKhauService.searKhaiTu(query);
+  }
   @Get('khai-sinh')
   getKhaiSinh(@Query() query: searchKhaiSinh) {
     return this.nhanKhauService.searchKhaiSinh(query);
@@ -47,6 +52,7 @@ export class NhankhauController {
       }),
     ).then((rs) => {
       const [data, [total]] = rs;
+      console.log(total);
       return {
         data,
         total: total['count(`id`)'],

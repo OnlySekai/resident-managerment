@@ -7,6 +7,7 @@ import { nhanKhauDto } from 'src/dto/nhanKhau.dto';
 import { pheDuyet } from 'src/utils';
 import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
 import { omit } from 'lodash/fp';
+import { searchKhaiTuDto } from './dto/searchKhaiTu.dto';
 @Injectable()
 export class NhankhauService {
   readonly omitField = omit([
@@ -20,10 +21,57 @@ export class NhankhauService {
     'id',
     'id_bo',
     'id_me',
+    'limit',
+    'page',
   ]);
   constructor(private readonly db: DatabaseService) {}
+  searKhaiTu(query: searchKhaiTuDto) {
+    const normalQuery = this.omitField(this.searchKhaiSinh);
+    const { id, cccd, ten, limit, page } = query;
+    let queryKhai = this.db
+      .giay_khai_tu_table(true)
+      .select('gkt.*')
+      .select({
+        nhan_khau_id: 'nk.id',
+        cccd: 'nk.cccd',
+        ten: this.db.knex.raw(`concat(nk.ho, ' ', nk.ten_dem, ' ', nk.ten)`),
+      })
+      .select({
+        nguoi_khai_tu: 'nkt.id',
+        cccd: 'nkt.cccd',
+        ten_nguoi_khai_tu: this.db.knex.raw(
+          `concat(nkt.ho, ' ', nkt.ten_dem, ' ', nkt.ten)`,
+        ),
+      })
+      .leftJoin('nhan_khau as nk', 'nhan_khau_id', 'nk.id')
+      .leftJoin('nhan_khau as nkt', 'nkt.id', 'nguoi_lam_giay_id')
+      .where(normalQuery)
+      .orderBy('gkt.nhan_khau_id', 'desc')
+      .limit(limit)
+      .offset(limit * (page - 1));
+
+    if (id) queryKhai = queryKhai.whereIn('nk.id', getIds(id));
+    if (cccd) queryKhai = queryKhai.whereILike('nk.cccd', `%${cccd}%`);
+    if (ten) queryKhai = queryKhai.whereRaw(queryName(ten, 'nk'));
+    return queryKhai;
+  }
   searchKhaiSinh(query: searchKhaiSinh) {
     const normalQuery = this.omitField(this.searchKhaiSinh);
+    const {
+      cccd,
+      cccd_bo,
+      cccd_me,
+      ten,
+      ten_bo,
+      ten_me,
+      id,
+      bo_id,
+      me_id,
+      startDate,
+      endDate,
+      limit = 10,
+      page = 1,
+    } = query;
     let queryKhaiSinh = this.db
       .giay_khai_sinh_table(true)
       .select('gks.*')
@@ -49,13 +97,13 @@ export class NhankhauService {
         ),
       )
       .leftJoin('nhan_khau as nk', 'nhan_khau_id', 'nk.id')
-      .leftJoin('nhan_khau as me', 'me.id', 'nk.id')
-      .leftJoin('nhan_khau as bo', 'bo.id', 'nk.id')
-      .leftJoin('nhan_khau as nks', 'nguoi_khai_sinh', 'nks.id')
-      .where(normalQuery);
-
-    const { cccd, cccd_bo, cccd_me, ten, ten_bo, ten_me, id, bo_id, me_id } =
-      query;
+      .leftJoin('nhan_khau as me', 'me.id', 'nhan_khau_id')
+      .leftJoin('nhan_khau as bo', 'bo.id', 'nhan_khau_id')
+      .leftJoin('nhan_khau as nks', 'nguoi_khai_sinh', 'nhan_khau_id')
+      .where(normalQuery)
+      .orderBy('gks.nhan_khau_id', 'desc')
+      .limit(limit)
+      .offset(limit * (page - 1));
     if (cccd) queryKhaiSinh = queryKhaiSinh.whereILike('nk.cccd', `%${cccd}%`);
     if (cccd_bo)
       queryKhaiSinh = queryKhaiSinh.whereILike('bo.cccd', `%${cccd_bo}%`);
@@ -73,6 +121,18 @@ export class NhankhauService {
     console.log(getIds(bo_id));
     if (bo_id) queryKhaiSinh = queryKhaiSinh.whereIn('bo_id', getIds(bo_id));
     if (me_id) queryKhaiSinh = queryKhaiSinh.whereIn('me_id', getIds(me_id));
+    if (startDate)
+      queryKhaiSinh = queryKhaiSinh.where(
+        'ngay_khai_sinh',
+        '>=',
+        new Date(startDate),
+      );
+    if (endDate)
+      queryKhaiSinh = queryKhaiSinh.where(
+        'ngay_khai_sinh',
+        '<=',
+        new Date(endDate),
+      );
     return queryKhaiSinh;
   }
   searchNhanKhau({ limit = 10, page = 1, condition }) {
