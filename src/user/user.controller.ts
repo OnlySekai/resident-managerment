@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -51,5 +52,10 @@ export class UserController {
   @Get('user/:username')
   getUser(@Param('username') username: string) {
     return this.usersService.getUserByUsename(username);
+  }
+
+  @Get('search')
+  searchUser(@Query() query) {
+    return this.searchUser(query);
   }
 }

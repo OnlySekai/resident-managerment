@@ -1,11 +1,12 @@
 import {
   Injectable,
   NotFoundException,
+  Query,
   UnauthorizedException,
 } from '@nestjs/common';
 import { NotFoundError } from 'rxjs';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
-import { COMMON_STATUS } from 'src/common/constant';
+import { COMMON_STATUS, getIds } from 'src/common/constant';
 import { DatabaseService } from 'src/database.service';
 import { userDto } from 'src/dto/user.dto';
 import { Role } from 'src/model/role.enum';
@@ -14,6 +15,13 @@ import { selfUpdateUserDto } from './dto/selfUpdateUser.dto';
 @Injectable()
 export class UserService {
   constructor(private readonly db: DatabaseService) {}
+  searchUser(query) {
+    const { id } = query;
+    const ids = getIds(id);
+    let userQuery = this.db.user_table();
+    if (ids) userQuery = userQuery.whereIn('id', ids);
+    return userQuery;
+  }
   async getAllUser() {
     const data = await this.db.user_table();
     return data.map((value) => {
