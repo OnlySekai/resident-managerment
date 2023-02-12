@@ -47,8 +47,12 @@ export class ThietbiService {
     const listPhieuMuon = await this.db.phieu_muon_table();
     return listPhieuMuon.map(async (phieuMuon) => {
       phieuMuon['phien_su_dung'] = await this.db
-        .phien_su_dung_table()
-        .where({ phieu_muon: phieuMuon.id });
+        .phien_su_dung_table(true)
+        .select('psd.*')
+        .select({ ten: 'ltn.name' })
+        .where({ phieu_muon: phieuMuon.id })
+        .leftJoin('tai_nguyen as tn', 'tn.id', 'psd.tai_nguyen_id')
+        .leftJoin('loai_tai_nguyen as ltn', 'ltn.id', 'loai_id');
       return phieuMuon;
     });
   }
@@ -156,11 +160,21 @@ export class ThietbiService {
     });
   }
 
-  async findAllTaiNguyenKhaDung({ type, startDate, endDate }) {
+  async findAllTaiNguyenKhaDung({ type, startDate, endDate, all }) {
+    if (all)
+      return this.db
+        .tai_nguyen_table(true)
+        .select('tn.*')
+        .select({ ten_tai_nguyen: 'ltn.name' })
+        .where({ loai_id: type })
+        .leftJoin('loai_tai_nguyen as ltn', 'loai_id', 'ltn.id');
     return this.db
-      .tai_nguyen_table()
+      .tai_nguyen_table(true)
+      .leftJoin('loai_tai_nguyen as ltn', 'loai_id', 'ltn.id')
+      .select('tn.*')
+      .select({ ten_tai_nguyen: 'ltn.name' })
       .where('loai_id', type)
-      .whereNotIn('id', (dangSuDung) =>
+      .whereNotIn('tn.id', (dangSuDung) =>
         dangSuDung
           .from('phien_su_dung')
           .select('tai_nguyen_id')
