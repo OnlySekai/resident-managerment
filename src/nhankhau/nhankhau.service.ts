@@ -9,6 +9,7 @@ import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
 import { omit } from 'lodash/fp';
 import { searchKhaiTuDto } from './dto/searchKhaiTu.dto';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
+import { TrackBackQuest } from 'src/common/interface';
 @Injectable()
 export class NhankhauService {
   readonly omitField = omit([
@@ -26,6 +27,27 @@ export class NhankhauService {
     'page',
   ]);
   constructor(private readonly db: DatabaseService) {}
+
+  async trackbackNhanKhau(id: number, query: TrackBackQuest) {
+    const { startDate, endDate } = query;
+    const dinhChinh = await this.db
+      .don_dinh_chinh_nhan_khau_table()
+      .where({ nhan_khau_id: id, trang_thai: DON_STATUS.PHE_DUYET })
+      .whereBetween('ngay_phe_duyet', [new Date(startDate), new Date(endDate)]);
+    console.log(startDate);
+    console.log(endDate);
+    return dinhChinh.map((don) => {
+      const type = 'don_dinh_chinh_nhan_khau';
+      const { mo_ta, ngay_phe_duyet: date } = don;
+      const { cu, moi } = JSON.parse(mo_ta);
+      return {
+        date,
+        type,
+        cu,
+        moi,
+      };
+    });
+  }
   searKhaiTu(query: searchKhaiTuDto) {
     const normalQuery = this.omitField(this.searchKhaiSinh);
     const { id, cccd, ten, limit, page } = query;
@@ -243,8 +265,11 @@ export class NhankhauService {
       await trx
         .from('nhan_khau')
         .where('id', nhan_khau_id)
-        .update(JSON.parse(mo_ta));
-      const [nhanKhauMoi] = await this.db.getByIds('nhan_khau', nhan_khau_id);
+        .update(JSON.parse(mo_ta))
+        .transacting(trx);
+      const [nhanKhauMoi] = await this.db
+        .getByIds('nhan_khau', nhan_khau_id)
+        .transacting(trx);
       await trx
         .from('don_dinh_chinh_nhan_khau')
         .where('id', id)

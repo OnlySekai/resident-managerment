@@ -15,10 +15,10 @@ import { Request } from 'express';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 import { HasRoles } from 'src/auth/has-roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { TrackBackQuest } from 'src/common/interface';
 import { DondinhChinhNhanKhauDto } from 'src/dto/donDinhChinhNhanKhau.dto';
 import { GiayKhaiTuDto } from 'src/dto/giayKhaiTu.dto';
 import { Role } from 'src/model/role.enum';
-import { ThongKeNhanKhauDto } from '../thongke/dto/thongKeNhanKhau.dto';
 import { searchKhaiSinh } from './dto/searchKhaiSinh.dto';
 import { searchKhaiTuDto } from './dto/searchKhaiTu.dto';
 import { ThemNhanKhauDto } from './dto/themNhanKhau.dto';
@@ -35,6 +35,10 @@ export class NhankhauController {
   @Get('khai-sinh')
   getKhaiSinh(@Query() query: searchKhaiSinh) {
     return this.nhanKhauService.searchKhaiSinh(query);
+  }
+  @Get('track-back/:id')
+  trackbackHoKhau(@Param('id') id: number, @Query() query: TrackBackQuest) {
+    return this.nhanKhauService.trackbackNhanKhau(id, query);
   }
   @Post()
   khaiSinh(@Body() body: ThemNhanKhauDto) {
@@ -78,10 +82,5 @@ export class NhankhauController {
   rejectDinhChinh(@Req() req, @Param('id') id: number) {
     const user = req.user as UserPayloadDto;
     return this.nhanKhauService.rejectDinhChinh(user, id);
-  }
-
-  @Get(':id')
-  thongTinNhanKhau(@Param('id') id: number) {
-    return this.nhanKhauService.searchNhanKhau({ condition: { id } });
   }
 }
