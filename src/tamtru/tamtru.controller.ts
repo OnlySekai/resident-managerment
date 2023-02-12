@@ -22,7 +22,6 @@ import { TamtruService } from './tamtru.service';
 export class TamtruController {
   constructor(private readonly tamTruService: TamtruService) {}
 
-  @HasRoles(Role.Admin)
   @Delete(':id')
   rejectTamTru(@Req() req, @Param('id') id: number) {
     const user = req.user as UserPayloadDto;
@@ -36,7 +35,7 @@ export class TamtruController {
       message: 'them thanh cong';
     });
   }
-  
+
   @HasRoles(Role.Admin)
   @Post(':id')
   acceptTamTru(@Param('id') id: number, @Req() req) {

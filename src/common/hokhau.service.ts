@@ -1,24 +1,25 @@
 import {
   BadRequestException,
   HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database.service';
 import { DonChuyenKhauDto } from 'src/dto/donChuyenKhau.dto';
 import { HokhauDto } from 'src/dto/hoKhau.dto';
-import { SearchHoKhauDto } from './dto/searchHokhau.dto';
-import { InputTachKhauDto } from './dto/inputTachKhau.dto';
 import { pheDuyet } from '../utils';
 import { DonDinhChinhHoKhauDto } from 'src/dto/donDinhChinhHoKhau.dto';
 import { queryGetDonDto } from 'src/common/queryGetDon.dto';
 import { DON_STATUS, reject } from 'src/common/constant';
-import { InputChuyenKhauDto } from './dto/inputChuyenKhau.dto';
-import { InnputDonNhapKhauDto } from './dto/inputNhapKhau.dto';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 import { omit } from 'lodash/fp';
 import { DonTachKhauDto } from 'src/dto/donTachKhau.dto';
-import { HoKhauResponseDto } from './dto/hoKhauResponse.dto';
+import { SearchHoKhauDto } from 'src/hokhau/dto/searchHokhau.dto';
+import { InputChuyenKhauDto } from 'src/hokhau/dto/inputChuyenKhau.dto';
+import { HoKhauResponseDto } from 'src/hokhau/dto/hoKhauResponse.dto';
+import { InputTachKhauDto } from 'src/hokhau/dto/inputTachKhau.dto';
+import { InnputDonNhapKhauDto } from 'src/hokhau/dto/inputNhapKhau.dto';
 @Injectable()
 export class HokhauService {
   constructor(private readonly database: DatabaseService) {}

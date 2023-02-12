@@ -220,7 +220,7 @@ export class NhankhauService {
       throw new NotFoundException('Khong tim thay don dinh chinh nhan khau');
     return this.db
       .getByIds('don_dinh_chinh_nhan_khau', id)
-      .update(reject(user.sub));
+      .update(reject(user));
   }
   async dinhChinh(don: DondinhChinhNhanKhauDto) {
     const [nhanKhau] = await this.db.getByIds('nhan_khau', don.nhan_khau_id);

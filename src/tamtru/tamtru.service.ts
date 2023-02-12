@@ -12,9 +12,9 @@ export class TamtruService {
   async rejectTamTru(user: UserPayloadDto, id: number) {
     const [don] = await this.db
       .getByIds('don_tam_tru', id)
-      .where({ status: DON_STATUS.TAO_MOI });
+      .where({ trang_thai: DON_STATUS.TAO_MOI });
     if (!don) throw new NotFoundException('Khong tim thay don');
-    return this.db.getByIds('don_tam_tru', id).update(reject(user.sub));
+    return this.db.getByIds('don_tam_tru', id).update(reject(user));
   }
   themTamTru(nhanKhau: nhanKhauDto, don: DonTamTruDto) {
     return this.db.knex.transaction(async (trx) => {

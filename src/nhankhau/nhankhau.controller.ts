@@ -76,7 +76,6 @@ export class NhankhauController {
     return this.nhanKhauService.acceptDinhChinh(id, req.user.useId);
   }
 
-  @HasRoles(Role.Admin)
   @Patch('dinh-chinh/tu-choi/:id')
   rejectDinhChinh(@Req() req, @Param('id') id: number) {
     const user = req.user as UserPayloadDto;

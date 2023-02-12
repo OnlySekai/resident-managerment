@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
+import { HasRoles } from 'src/auth/has-roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { DonTamVangDto } from 'src/dto/donTamVang.dto';
+import { Role } from 'src/model/role.enum';
 import { TamvangService } from './tamvang.service';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -31,20 +33,9 @@ export class TamvangController {
     return this.tamVangService.rejectTamVang(user, id);
   }
 
+  @HasRoles(Role.Admin)
   @Post(':id')
   acceptTamVang(@Param('id') id, @Req() req) {
     return this.tamVangService.acceptTamVang(id, req.user.userId);
-  }
-  @Get('id')
-  chiTietTamVang(@Param('id') id: number) {
-    return { donTamVang: {} };
-  }
-  @Delete('id')
-  xoaTamVang(@Param('id') id: number) {
-    return {};
-  }
-  @Patch('id')
-  suaTamVang(@Param('id') id: number) {
-    return {};
   }
 }

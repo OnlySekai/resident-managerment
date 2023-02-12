@@ -70,14 +70,12 @@ export class HokhauController {
     return this.hoKhauService.acceptSuaKhau(id, req.user.userId);
   }
 
-  @HasRoles(Role.Admin)
   @Patch('sua-khau/tu-choi/:id')
   rejectSuaKhau(@Req() req, @Param('id') id: number) {
     const user = req.user as UserPayloadDto;
     return this.hoKhauService.rejectSuakhau(user, id);
   }
 
-  @HasRoles(Role.Admin)
   @Get('don/:id')
   getDonsuaKhau(@Query() query: queryGetDonDto, @Param('id') id: any) {
     if (id == 'all') return this.hoKhauService.getDon(query);
@@ -86,6 +84,7 @@ export class HokhauController {
   @Delete('chuyen-khau/tu-choi/:id')
   rejectChuyenKhau(@Req() req, @Param('id') id: number) {
     const user = req.user as UserPayloadDto;
+    console.log(user);
     return this.hoKhauService.rejectChuyenKhau(user, id);
   }
   @HasRoles(Role.Admin)
@@ -101,7 +100,7 @@ export class HokhauController {
     return this.hoKhauService.acceptChuyenKhau(id, req.user.userId);
   }
 
-  @Post('tach-khau/tu-choi/:id')
+  @Put('tach-khau/tu-choi/:id')
   rejectTachKhau(@Req() req, @Param('id') id: number) {
     return this.hoKhauService.rejectTachKhau(req.user, id);
   }

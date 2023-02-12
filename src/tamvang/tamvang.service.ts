@@ -15,9 +15,9 @@ export class TamvangService {
   async rejectTamVang(user: UserPayloadDto, id: number) {
     const [don] = await this.db
       .getByIds('don_tam_vang', id)
-      .where({ status: DON_STATUS.TAO_MOI });
+      .where({ trang_thai: DON_STATUS.TAO_MOI });
     if (!don) throw new NotFoundException('Khong tim thay don');
-    return this.db.getByIds('don_tam_vang', id).update(reject(user.sub));
+    return this.db.getByIds('don_tam_vang', id).update(reject(user));
   }
   async themTamVang(don: DonTamVangDto) {
     const { nhan_khau_id } = don;

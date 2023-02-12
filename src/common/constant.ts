@@ -1,7 +1,11 @@
+import { UserPayloadDto } from "src/auth/dto/userPayload.dto";
+import { Role } from "src/model/role.enum";
+
 export enum DON_STATUS {
   PHE_DUYET = 'PHE_DUYET',
   TAO_MOI = 'TAO_MOI',
   TU_CHOI = 'TU_CHOI',
+  HUY_BO = 'HUY_BO'
 }
 
 export enum COMMON_STATUS {
@@ -32,12 +36,12 @@ export const getIds = (ids) => {
   return ids;
 };
 
-export const reject = (userId, ghi_chu?) => {
+export const reject = (user: UserPayloadDto, ghi_chu?) => {
   return {
-    user_phe_duyet: userId,
+    user_phe_duyet: user.userId,
     ghi_chu,
     ngay_phe_duyet: new Date(),
-    trang_thai: COMMON_STATUS,
+    trang_thai: user.roles === Role.Admin? COMMON_STATUS.TU_CHOI: DON_STATUS.HUY_BO,
   };
 };
 
