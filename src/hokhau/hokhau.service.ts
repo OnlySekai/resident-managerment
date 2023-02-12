@@ -224,8 +224,8 @@ export class HokhauService {
         donChuyenKhau.so_ho_khau_cu,
       ).transacting(trx);
       const mo_ta_json = {
-        cu: { ...hoKhauCu, ...chuHoCu, nhankhaus: nhankhausCu },
-        moi: { ...hoKhauCu, ...chuHoCu, nhankhaus: nhankhausCuMoi },
+        cu: { ...hoKhauCu, ...chuHoCu, nhanKhaus: nhankhausCu },
+        moi: { ...hoKhauCu, ...chuHoCu, nhanKhaus: nhankhausCuMoi },
       };
 
       if (!Number.isInteger(donChuyenKhau.so_ho_khau_moi))
@@ -261,8 +261,8 @@ export class HokhauService {
       ).transacting(trx);
 
       const mo_ta_2_json = {
-        cu: { ...hoKhauMoi, ...chuHoMoi, nhankhaus: nhankhausMoi },
-        moi: { ...hoKhauMoi, ...chuHoMoi, nhankhaus: nhankhausMoiMoi },
+        cu: { ...hoKhauMoi, ...chuHoMoi, nhanKhaus: nhankhausMoi },
+        moi: { ...hoKhauMoi, ...chuHoMoi, nhanKhaus: nhankhausMoiMoi },
       };
 
       await this.database
@@ -388,8 +388,8 @@ export class HokhauService {
       ).transacting(trx);
       const chuHo = this.getChuHo(donTachKhau.so_ho_khau_cu);
       const mo_ta = JSON.stringify({
-        cu: { ...hoKhau, ...chuHo, nhankhaus: nhanKhaucu },
-        moi: { ...hoKhau, ...chuHo, nhankhaus: nhanKhausMoi },
+        cu: { ...hoKhau, ...chuHo, nhanKhaus: nhanKhaucu },
+        moi: { ...hoKhau, ...chuHo, nhanKhaus: nhanKhausMoi },
       });
       await this.database
         .editById('don_tach_khau', id, {
@@ -577,8 +577,8 @@ export class HokhauService {
         donNhapKhau.so_ho_khau_moi_id,
       ).transacting(trx);
       const mo_ta = JSON.stringify({
-        cu: { nhankhaus: nhanKhauCu, ...chuHo, ...hokhau },
-        moi: { nhankhaus: nhanKhauMoi, ...chuHo, ...hokhau },
+        cu: { nhanKhaus: nhanKhauCu, ...chuHo, ...hokhau },
+        moi: { nhanKhaus: nhanKhauMoi, ...chuHo, ...hokhau },
       });
       const pheDuyetQuery = await this.database
         .don_nhap_khau_table()

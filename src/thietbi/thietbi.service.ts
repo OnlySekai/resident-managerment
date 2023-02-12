@@ -84,7 +84,7 @@ export class ThietbiService {
       });
       const [phieuMuonId] = await trx('phieu_muon').insert({
         ...phieuMuon.phieuMuon,
-        trang_thai: 'CREATE',
+        trang_thai: THIET_BI_STATUS.CREATE,
         sao_ke_dang_ki: saoKeId,
         user_tao: userId,
       });
@@ -101,17 +101,10 @@ export class ThietbiService {
   }
 
   async traThietBi(phieuTra: TraDto) {
-    const [phieuMuon] = await this.db.getByIds(
-      'phieu_muon',
-      phieuTra.phieuMuonId,
-    );
-    if (
-      phieuMuon ||
-      [THIET_BI_STATUS.DONE, THIET_BI_STATUS.MISSING].includes(
-        phieuMuon.trang_thai,
-      )
-    )
-      throw new NotFoundException('Khong tim thay phieu muon');
+    const [phieuMuon] = await this.db
+      .getByIds('phieu_muon', phieuTra.phieuMuonId)
+      .where({ trang_thai: THIET_BI_STATUS.CREATE });
+    if (!phieuMuon) throw new NotFoundException('Khong tim thay phieu muon');
     const tainguyenId = await this.db
       .phien_su_dung_table()
       .select('tai_nguyen_id')
