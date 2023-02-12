@@ -22,6 +22,7 @@ import { query } from 'express';
 import { MuonDto } from './dto/muon.dto';
 import { TraDto } from './dto/tra.dto';
 import { CreatePhieuMuonDto } from './dto/create-phieuMuon.dto';
+import { TrackBackQuest } from 'src/common/interface';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('tai-nguyen')
@@ -68,4 +69,10 @@ export class ThietbiController {
   timThietBiKhaDung(@Query() query) {
     return this.thietbiService.findAllTaiNguyenKhaDung(query);
   }
+
+  @Get('track-back/:id')
+  trackBack(@Param('id') id: number, @Query() query: TrackBackQuest) {
+    return this.thietbiService.trackBackThietBi(id, query)
+  }
+
 }

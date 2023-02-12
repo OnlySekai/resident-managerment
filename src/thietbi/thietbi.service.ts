@@ -9,12 +9,35 @@ import { MuonDto } from './dto/muon.dto';
 import { TraDto } from './dto/tra.dto';
 import { Role } from 'src/model/role.enum';
 import { CreateThietbiTypeDto } from './dto/create-thietbi-type.dto';
-import { getIds, THIET_BI_STATUS } from 'src/common/constant';
+import { DON_STATUS, getIds, THIET_BI_STATUS } from 'src/common/constant';
 import { omit } from 'lodash/fp';
+import { TrackBackQuest } from 'src/common/interface';
 @Injectable()
 export class ThietbiService {
   constructor(private readonly db: DatabaseService) {}
   readonly omitField = omit(['name', 'id']);
+
+  async trackBackThietBi(id: number, query: TrackBackQuest) {
+    const { startDate, endDate } = query;
+    const thietBi = await this.db
+      .phien_su_dung_table()
+      .whereBetween('ngay_tra', [new Date(startDate), new Date(endDate)]);
+    return thietBi.map((phien) => {
+      const type = 'don_dinh_chinh_nhan_khau';
+      const { mo_ta, ngay_tra: date } = phien;
+      try {
+        const { cu, moi } = JSON.parse(mo_ta);
+        return {
+          date,
+          type,
+          cu,
+          moi,
+        };
+      } catch (err) {
+        return { date, type };
+      }
+    });
+  }
   getTaiNguyenType(condition?: any) {
     let { id, name } = condition;
     const normalCondition = this.omitField(condition);
@@ -123,23 +146,32 @@ export class ThietbiService {
         )
         .update({ ngay_tra: phieuTra.ngayTra });
 
-      const updateXuongCap = [];
-      phieuTra.note.forEach((value) => {
+      const updateXuongCap = phieuTra.note.map(async (value) => {
         const { mo_ta, tinh_trang } = value;
-        const updateXuongCapQuery = this.db
+        const [cu] = await this.db
+          .tai_nguyen_table()
+          .where({ id: value.taiNguyenId })
+          .transacting(trx);
+
+        await this.db
           .tai_nguyen_table()
           .where({ id: value.taiNguyenId })
           .update({ mo_ta, tinh_trang })
           .transacting(trx);
-        const updateXuongCapPhienQuery = this.db
+
+        const [moi] = await this.db
+          .tai_nguyen_table()
+          .where({ id: value.taiNguyenId })
+          .transacting(trx);
+
+        await this.db
           .phien_su_dung_table()
           .where({
             tai_nguyen_id: value.taiNguyenId,
             phieu_muon: phieuTra.phieuMuonId,
           })
-          .update({ mo_ta: JSON.stringify({ moi: { mo_ta, tinh_trang } }) })
+          .update({ mo_ta: JSON.stringify({ moi, cu }) })
           .transacting(trx);
-        updateXuongCap.push(updateXuongCapQuery, updateXuongCapPhienQuery);
       });
 
       const updatePhieuMuon = this.db.editById(
