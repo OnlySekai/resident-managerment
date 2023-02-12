@@ -22,6 +22,12 @@ import { HoKhauResponseDto } from './dto/hoKhauResponse.dto';
 @Injectable()
 export class HokhauService {
   constructor(private readonly database: DatabaseService) {}
+  readonly omitDonField = omit([
+    'id',
+    'trang_thai',
+    'user_phe_duyet',
+    'ngay_phe_duyet',
+  ]);
   public themHoKhau(hokhau: HokhauDto) {
     return this.database.knex.transaction((trx) => {
       this.database
@@ -113,11 +119,11 @@ export class HokhauService {
       (await this.database.getByIds('so_ho_khau', ...hoKhauIds)).length
     )
       throw new BadRequestException('Ho khau khong hop le');
-
+    const normalField = this.omitDonField(donChuyenKhau);
     return this.database.knex.transaction(async (trx) => {
       const [don_chuyen_khau_id] = await this.database
         .don_chuyen_khau_table()
-        .insert(donChuyenKhau)
+        .insert(normalField)
         .transacting(trx);
 
       await trx('don_chuyen_khau_nhan_khau').insert(
@@ -299,7 +305,7 @@ export class HokhauService {
   async rejectSuakhau(user: UserPayloadDto, id: number) {
     const [don] = await this.database
       .getByIds('don_dinh_chinh_so_ho_khau', id)
-      .where({ status: DON_STATUS.TAO_MOI });
+      .where({ trang_thai: DON_STATUS.TAO_MOI });
     if (!don) throw new NotFoundException('Khong tim thay don');
     return this.database
       .getByIds('don_dinh_chinh_so_ho_khau', id)
@@ -320,8 +326,10 @@ export class HokhauService {
   }
 
   public async acceptSuaKhau(id: number, userId: number, note?: string) {
+    console.log(id);
     const [don] = await this.database.getByIds('don_dinh_chinh_so_ho_khau', id);
-    if (don.status !== DON_STATUS.TAO_MOI)
+    console.log(don);
+    if (don.trang_thai !== DON_STATUS.TAO_MOI)
       throw new BadRequestException('Đơn không hợp lệ');
     const [soHoKhauCu] = await this.database.getByIds(
       'so_ho_khau',
