@@ -86,9 +86,4 @@ export class NhankhauController {
   thongTinNhanKhau(@Param('id') id: number) {
     return this.nhanKhauService.searchNhanKhau({ condition: { id } });
   }
-
-  @Get('thongke')
-  thongKeNhanKhau(@Query() query: ThongKeNhanKhauDto) {
-    return { nhankhau: [], totalNhanKhau: 5 };
-  }
 }

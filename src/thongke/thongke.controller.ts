@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ThongKeNhanKhauDto } from 'src/thongke/dto/thongKeNhanKhau.dto';
 
 @Controller('thongke')

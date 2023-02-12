@@ -16,6 +16,7 @@ import { Request } from 'express';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
 import { HasRoles } from 'src/auth/has-roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { TrackBackQuest } from 'src/common/interface';
 import { queryGetDonDto } from 'src/common/queryGetDon.dto';
 import { DatabaseService } from 'src/database.service';
 import { DonChuyenKhauDto } from 'src/dto/donChuyenKhau.dto';
@@ -57,6 +58,10 @@ export class HokhauController {
   @Get(':id')
   getHoKhau(@Param('id') id: number) {
     return id;
+  }
+  @Get(':id/track-back')
+  trackbackHoKhau(@Param('id') id: number, @Query() query: TrackBackQuest){
+    return this.hoKhauService.trackBachHoKhau(id, query)
   }
 
   @Patch()

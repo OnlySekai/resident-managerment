@@ -137,7 +137,7 @@ export class NhankhauService {
     return queryKhaiSinh;
   }
   searchNhanKhau({ limit = 10, page = 1, condition }) {
-    let { ten, cccd, active = true, ids } = condition;
+    let { ten, cccd, active, ids } = condition;
     if (ids !== undefined && !Array.isArray(ids)) ids = [ids];
     console.log(ids);
     const queryName = ten
@@ -148,8 +148,9 @@ export class NhankhauService {
     let getNhanKhuQuery = this.db
       .nhan_khau_table()
       .whereRaw(queryName)
-      .whereILike('cccd', cccd ? `%${cccd}%` : '%')
-      .where('active', active);
+      .whereILike('cccd', cccd ? `%${cccd}%` : '%');
+    if (Number.isInteger(active))
+      getNhanKhuQuery = getNhanKhuQuery.where('active', active);
     getNhanKhuQuery = ids
       ? getNhanKhuQuery.whereIn('id', ids)
       : getNhanKhuQuery;
