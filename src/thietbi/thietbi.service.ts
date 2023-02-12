@@ -9,7 +9,7 @@ import { MuonDto } from './dto/muon.dto';
 import { TraDto } from './dto/tra.dto';
 import { Role } from 'src/model/role.enum';
 import { CreateThietbiTypeDto } from './dto/create-thietbi-type.dto';
-import { THIET_BI_STATUS } from 'src/common/constant';
+import { getIds, THIET_BI_STATUS } from 'src/common/constant';
 import { omit } from 'lodash/fp';
 @Injectable()
 export class ThietbiService {
@@ -43,9 +43,13 @@ export class ThietbiService {
     return query;
   }
 
-  async getPhieuMuon() {
-    const listPhieuMuon = await this.db.phieu_muon_table();
-    return listPhieuMuon.map(async (phieuMuon) => {
+  async getPhieuMuon(query: CreateThietbiDto) {
+    const { id, ...restQuery } = query;
+    const ids = getIds(id);
+    let listPhieuMuon = this.db.phieu_muon_table().where(restQuery);
+    if (ids) listPhieuMuon = listPhieuMuon.whereIn('id', ids);
+    const rs = await listPhieuMuon;
+    return rs.map(async (phieuMuon) => {
       phieuMuon['phien_su_dung'] = await this.db
         .phien_su_dung_table(true)
         .select('psd.*')

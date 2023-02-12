@@ -21,6 +21,7 @@ import { HasRoles } from 'src/auth/has-roles.decorator';
 import { query } from 'express';
 import { MuonDto } from './dto/muon.dto';
 import { TraDto } from './dto/tra.dto';
+import { CreatePhieuMuonDto } from './dto/create-phieuMuon.dto';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('tai-nguyen')
@@ -54,8 +55,8 @@ export class ThietbiController {
   }
 
   @Get('muon')
-  async getPhieuMuon() {
-    return Promise.all(await this.thietbiService.getPhieuMuon());
+  async getPhieuMuon(@Query() query) {
+    return Promise.all(await this.thietbiService.getPhieuMuon(query));
   }
 
   @Post('tra')

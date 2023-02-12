@@ -1,8 +1,8 @@
+import { GIOI_TINH, TINH_TRANG_TAM_TRU } from 'src/common/constant';
+
 export interface ThongKeNhanKhauDto {
-  gioi_tinh?: 0 | 1 ;
-  tinh_trang?: number;
+  gioi_tinh?: GIOI_TINH;
+  tinh_trang?: TINH_TRANG_TAM_TRU;
   min_age?: number;
   max_age?: number;
-  min_year?: number;
-  max_year?: number;
 }
