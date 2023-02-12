@@ -60,8 +60,8 @@ export class HokhauController {
     return id;
   }
   @Get(':id/track-back')
-  trackbackHoKhau(@Param('id') id: number, @Query() query: TrackBackQuest){
-    return this.hoKhauService.trackBachHoKhau(id, query)
+  trackbackHoKhau(@Param('id') id: number, @Query() query: TrackBackQuest) {
+    return this.hoKhauService.trackBachHoKhau(id, query);
   }
 
   @Patch()
@@ -89,7 +89,6 @@ export class HokhauController {
   @Delete('chuyen-khau/tu-choi/:id')
   rejectChuyenKhau(@Req() req, @Param('id') id: number) {
     const user = req.user as UserPayloadDto;
-    console.log(user);
     return this.hoKhauService.rejectChuyenKhau(user, id);
   }
   @HasRoles(Role.Admin)
@@ -101,7 +100,6 @@ export class HokhauController {
   @HasRoles(Role.Admin)
   @Delete(':id')
   async acceptChuyenKhau(@Param('id') id: number, @Req() req) {
-    console.log(id);
     return this.hoKhauService.acceptChuyenKhau(id, req.user.userId);
   }
 

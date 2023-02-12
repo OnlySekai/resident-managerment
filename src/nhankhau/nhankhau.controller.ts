@@ -44,7 +44,6 @@ export class NhankhauController {
   @Get()
   async searchNhanKhau(@Req() req: Request) {
     const { limit, page, ...searchParams } = req.query;
-    console.log(req.query);
     return Promise.all(
       this.nhanKhauService.searchNhanKhau({
         limit: +limit,
@@ -53,7 +52,6 @@ export class NhankhauController {
       }),
     ).then((rs) => {
       const [data, [total]] = rs;
-      console.log(total);
       return {
         data,
         total: total['count(`id`)'],

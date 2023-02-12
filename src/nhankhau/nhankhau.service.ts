@@ -119,7 +119,6 @@ export class NhankhauService {
     if (cccd_me)
       queryKhaiSinh = queryKhaiSinh.whereILike('me.cccd', `%${cccd_me}%`);
     if (id) queryKhaiSinh = queryKhaiSinh.whereIn('nk.id', getIds(id));
-    console.log(getIds(bo_id));
     if (bo_id) queryKhaiSinh = queryKhaiSinh.whereIn('bo_id', getIds(bo_id));
     if (me_id) queryKhaiSinh = queryKhaiSinh.whereIn('me_id', getIds(me_id));
     if (startDate)
@@ -139,7 +138,6 @@ export class NhankhauService {
   searchNhanKhau({ limit = 10, page = 1, condition }) {
     let { ten, cccd, active, ids } = condition;
     if (ids !== undefined && !Array.isArray(ids)) ids = [ids];
-    console.log(ids);
     const queryName = ten
       ? `MATCH(ho, ten_dem , ten ) against('${ten
           .split(' ')

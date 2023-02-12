@@ -55,9 +55,7 @@ export class HokhauService {
         this.database.knex.raw(`concat(nk.ho,nk.ten_dem,nk.ten) As ten_chu_ho`),
       )
       .innerJoin('nhan_khau AS nk', 'nk.id', 'shk.chu_ho_id');
-    console.log(id);
     if (id) {
-      console.log('in');
       if (!Array.isArray(id)) id = [id];
       querySql = querySql.whereIn('shk.id', id);
     }
@@ -208,7 +206,6 @@ export class HokhauService {
       const nhanKhauHoKhau = await this.database.getNhanKhauIdsHoKhau(
         so_ho_khau_cu,
       );
-      console.log(nhanKhauHoKhau);
       if (
         !donTachKhauCung.every((value) =>
           nhanKhauHoKhau.includes(value.nhan_khau_id),
@@ -355,7 +352,6 @@ export class HokhauService {
 
   async nhapKhau(nhapKhauInput: InnputDonNhapKhauDto) {
     const { donNhapKhau, donNhapKhauCung } = nhapKhauInput;
-    console.log(donNhapKhauCung);
     const { dai_dien_id, so_ho_khau_moi_id } = donNhapKhau;
     const daiDien = await this.database.getByIds('nhan_khau', dai_dien_id);
     if (!daiDien.length)
@@ -414,7 +410,6 @@ export class HokhauService {
                 .transacting(trx)
             )[0]
           : donNhapKhau.so_ho_khau_moi_id;
-      console.log(soHoKhau);
       const pheDuyetQuery = this.database
         .don_nhap_khau_table()
         .where({ id })

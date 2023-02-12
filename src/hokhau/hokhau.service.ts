@@ -36,8 +36,9 @@ export class HokhauService {
   ]);
   async trackBachHoKhau(id: number, query: TrackBackQuest) {
     const { startDate, endDate } = query;
-    const getDon = (table: string, col: string) =>
-      this.database.knex
+    const getDon = (table: string, col: string, option = {}) => {
+      const { alterDes } = option as any;
+      return this.database.knex
         .from(table)
         .where(col, id)
         .whereBetween('ngay_phe_duyet', [
@@ -50,9 +51,12 @@ export class HokhauService {
             const type = table;
             const manipulateDon = don as DonDinhChinhHoKhauDto;
             const date = manipulateDon.ngay_phe_duyet;
-            const { cu, moi } = manipulateDon.mo_ta
-              ? JSON.parse(manipulateDon.mo_ta)
-              : ({} as Record<string, HoKhauResponseDto>);
+            const jsonString = alterDes
+              ? manipulateDon[alterDes]
+              : manipulateDon.mo_ta;
+            const { cu, moi } = jsonString
+              ? JSON.parse(jsonString)
+              : ({} as any);
             return {
               type,
               date,
@@ -61,11 +65,13 @@ export class HokhauService {
             };
           }),
         ) as Promise<TrackBackData<HoKhauResponseDto>>;
+    };
     const data = await Promise.all([
       getDon('don_dinh_chinh_so_ho_khau', 'so_ho_khau_id'),
       getDon('don_nhap_khau', 'so_ho_khau_moi_id'),
       getDon('don_tach_khau', 'so_ho_khau_cu'),
       getDon('don_chuyen_khau', 'so_ho_khau_cu'),
+      getDon('don_chuyen_khau', 'so_ho_khau_moi', { alterDes: 'mo_ta_2' }),
     ]);
     return data.flat();
   }
@@ -101,9 +107,7 @@ export class HokhauService {
         this.database.knex.raw(`concat(nk.ho,nk.ten_dem,nk.ten) As ten_chu_ho`),
       )
       .innerJoin('nhan_khau AS nk', 'nk.id', 'shk.chu_ho_id');
-    console.log(id);
     if (id) {
-      console.log('in');
       if (!Array.isArray(id)) id = [id];
       querySql = querySql.whereIn('shk.id', id);
     }
@@ -150,15 +154,11 @@ export class HokhauService {
     nhanKhauIds.pop();
     if (nhanKhauIds.some((id) => !hoKhauCu.nhanKhau.includes(id)))
       throw new BadRequestException('Nhan khau khong hop le');
-    const hoKhauIds = [
-      donChuyenKhau.so_ho_khau_cu,
-      donChuyenKhau.so_ho_khau_moi,
-    ];
-    if (Number.isInteger(hoKhauIds[1])) hoKhauIds.pop();
-    if (
-      hoKhauIds.length !==
-      (await this.database.getByIds('so_ho_khau', ...hoKhauIds)).length
-    )
+
+    const [hoKhauMoi] = donChuyenKhau.so_ho_khau_moi
+      ? await this.database.getByIds('so_ho_khau', donChuyenKhau.so_ho_khau_moi)
+      : [];
+    if (donChuyenKhau.so_ho_khau_moi && !hoKhauMoi)
       throw new BadRequestException('Ho khau khong hop le');
     const normalField = this.omitDonField(donChuyenKhau);
     return this.database.knex.transaction(async (trx) => {
@@ -195,6 +195,7 @@ export class HokhauService {
       .where({ id: donChuyenKhau.so_ho_khau_cu })) as HokhauDto[];
     //TODO:
     const chuHoCu = await this.getChuHo(donChuyenKhau.so_ho_khau_cu);
+    const nhankhausCu = await this.getNhankhaus(donChuyenKhau.so_ho_khau_cu);
 
     const [hoKhauMoi] = donChuyenKhau.so_ho_khau_moi
       ? await this.database
@@ -204,12 +205,12 @@ export class HokhauService {
     const chuHoMoi = donChuyenKhau.so_ho_khau_moi
       ? await this.getChuHo(donChuyenKhau.so_ho_khau_moi)
       : null;
+    const nhankhausMoi = donChuyenKhau.so_ho_khau_moi
+      ? await this.getNhankhaus(donChuyenKhau.so_ho_khau_moi)
+      : null;
 
     return this.database.knex.transaction(async (trx) => {
-      const changeStatus = this.database
-        .editById('don_chuyen_khau', id, pheDuyet(userId))
-        .transacting(trx);
-      const xoaKhoiHoKhauCu = this.database
+      await this.database
         .nhan_khau_so_ho_khau_table()
         .whereIn(
           'nhan_khau_id',
@@ -218,13 +219,28 @@ export class HokhauService {
         .del()
         .select('dai_dien_id')
         .transacting(trx);
-      await Promise.all([xoaKhoiHoKhauCu, changeStatus]);
+
+      const nhankhausCuMoi = await this.getNhankhaus(
+        donChuyenKhau.so_ho_khau_cu,
+      ).transacting(trx);
+      const mo_ta_json = {
+        cu: { ...hoKhauCu, ...chuHoCu, nhankhaus: nhankhausCu },
+        moi: { ...hoKhauCu, ...chuHoCu, nhankhaus: nhankhausCuMoi },
+      };
 
       if (!Number.isInteger(donChuyenKhau.so_ho_khau_moi))
-        return await this.database
-          .nhan_khau_table()
-          .update({ active: false })
-          .transacting(trx);
+        return await Promise.all([
+          this.database
+            .nhan_khau_table()
+            .update({ active: false })
+            .transacting(trx),
+          this.database
+            .editById('don_chuyen_khau', id, {
+              ...pheDuyet(userId),
+              mo_ta: JSON.stringify(mo_ta_json),
+            })
+            .transacting(trx),
+        ]);
 
       await this.database
         .nhan_khau_so_ho_khau_table()
@@ -238,6 +254,23 @@ export class HokhauService {
             };
           }),
         )
+        .transacting(trx);
+
+      const nhankhausMoiMoi = await this.getNhankhaus(
+        donChuyenKhau.so_ho_khau_moi,
+      ).transacting(trx);
+
+      const mo_ta_2_json = {
+        cu: { ...hoKhauMoi, ...chuHoMoi, nhankhaus: nhankhausMoi },
+        moi: { ...hoKhauMoi, ...chuHoMoi, nhankhaus: nhankhausMoiMoi },
+      };
+
+      await this.database
+        .editById('don_chuyen_khau', id, {
+          ...pheDuyet(userId),
+          mo_ta: JSON.stringify(mo_ta_json),
+          mo_ta_2: JSON.stringify(mo_ta_2_json),
+        })
         .transacting(trx);
     });
   }
@@ -268,7 +301,6 @@ export class HokhauService {
       const nhanKhauHoKhau = await this.database.getNhanKhauIdsHoKhau(
         so_ho_khau_cu,
       );
-      console.log(nhanKhauHoKhau);
       if (
         !donTachKhauCung.every((value) =>
           nhanKhauHoKhau.includes(value.nhan_khau_id),
@@ -315,8 +347,6 @@ export class HokhauService {
       this.getNhankhaus(donTachKhau.so_ho_khau_cu),
       this.database.so_ho_khau_table().where({ id: donTachKhau.so_ho_khau_cu }),
     ]);
-    console.log(donTachKhau.so_ho_khau_cu);
-    console.log(await this.getChuHo(donTachKhau.so_ho_khau_cu));
     return this.database.knex.transaction(async (trx) => {
       const hoKhauMoiId = await this.database
         .so_ho_khau_table()
@@ -397,7 +427,7 @@ export class HokhauService {
   async getChuHo(id) {
     const [chuHo] = await this.database
       .so_ho_khau_table(true)
-      .where({ id })
+      .where('shk.id', id)
       .innerJoin('nhan_khau as nk', 'nk.id', 'shk.chu_ho_id')
       .select({
         cccd_chu_ho: 'nk.cccd',
@@ -424,9 +454,7 @@ export class HokhauService {
   }
 
   public async acceptSuaKhau(id: number, userId: number, note?: string) {
-    console.log(id);
     const [don] = await this.database.getByIds('don_dinh_chinh_so_ho_khau', id);
-    console.log(don);
     if (don.trang_thai !== DON_STATUS.TAO_MOI)
       throw new BadRequestException('Đơn không hợp lệ');
     const [soHoKhauCu] = await this.database.getByIds(
@@ -465,7 +493,6 @@ export class HokhauService {
 
   async nhapKhau(nhapKhauInput: InnputDonNhapKhauDto) {
     const { donNhapKhau, donNhapKhauCung } = nhapKhauInput;
-    console.log(donNhapKhauCung);
     const { dai_dien_id, so_ho_khau_moi_id } = donNhapKhau;
     const daiDien = await this.database.getByIds('nhan_khau', dai_dien_id);
     if (!daiDien.length)
@@ -513,7 +540,9 @@ export class HokhauService {
       throw new NotFoundException('Khong tim thay');
     const nhanKhauCu = await this.getNhankhaus(donNhapKhau.so_ho_khau_moi_id);
     const chuHo = await this.getChuHo(donNhapKhau.so_ho_khau_moi_id);
-
+    const [hokhau] = await this.database
+      .so_ho_khau_table()
+      .where({ id: donNhapKhau.so_ho_khau_moi_id });
     return this.database.knex.transaction(async (trx) => {
       const soHoKhau =
         donNhapKhau.so_ho_khau_moi_id === null
@@ -527,7 +556,6 @@ export class HokhauService {
                 .transacting(trx)
             )[0]
           : donNhapKhau.so_ho_khau_moi_id;
-      console.log(soHoKhau);
 
       await this.database
         .nhan_khau_so_ho_khau_table()
@@ -549,8 +577,8 @@ export class HokhauService {
         donNhapKhau.so_ho_khau_moi_id,
       ).transacting(trx);
       const mo_ta = JSON.stringify({
-        cu: { ...nhanKhauCu, ...chuHo },
-        moi: { ...chuHo, ...nhanKhauMoi },
+        cu: { nhankhaus: nhanKhauCu, ...chuHo, ...hokhau },
+        moi: { nhankhaus: nhanKhauMoi, ...chuHo, ...hokhau },
       });
       const pheDuyetQuery = await this.database
         .don_nhap_khau_table()

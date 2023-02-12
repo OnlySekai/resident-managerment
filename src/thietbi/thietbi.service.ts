@@ -77,7 +77,6 @@ export class ThietbiService {
   }
 
   muonThietBi(phieuMuon: MuonDto, userId: number) {
-    console.log(phieuMuon.saoKe);
     return this.db.knex.transaction(async (trx) => {
       const [saoKeId] = await trx('sao_ke').insert({
         ...phieuMuon.saoKe,
