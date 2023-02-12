@@ -23,7 +23,7 @@ export class ThietbiService {
       .phien_su_dung_table()
       .whereBetween('ngay_tra', [new Date(startDate), new Date(endDate)]);
     return thietBi.map((phien) => {
-      const type = 'don_dinh_chinh_nhan_khau';
+      const type = 'Mượn thiết bị';
       const { mo_ta, ngay_tra: date } = phien;
       try {
         const { cu, moi } = JSON.parse(mo_ta);

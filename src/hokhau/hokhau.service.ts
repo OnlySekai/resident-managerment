@@ -12,7 +12,7 @@ import { InputTachKhauDto } from './dto/inputTachKhau.dto';
 import { pheDuyet } from '../utils';
 import { DonDinhChinhHoKhauDto } from 'src/dto/donDinhChinhHoKhau.dto';
 import { queryGetDonDto } from 'src/common/queryGetDon.dto';
-import { DON_STATUS, reject } from 'src/common/constant';
+import { DON_STATUS, getIds, reject } from 'src/common/constant';
 import { InputChuyenKhauDto } from './dto/inputChuyenKhau.dto';
 import { InnputDonNhapKhauDto } from './dto/inputNhapKhau.dto';
 import { UserPayloadDto } from 'src/auth/dto/userPayload.dto';
@@ -598,13 +598,22 @@ export class HokhauService {
   }
 
   getDon(query: queryGetDonDto) {
-    const limit = 5;
-    const { page = 1, startDate, endDate, status, type } = query;
+    const {
+      page = 1,
+      startDate,
+      endDate,
+      status,
+      type,
+      limit = 10,
+      id,
+    } = query;
+    const ids = getIds(id);
     let querySql = this.database
       .knex(type)
       .orderBy('ngay_lam_don', 'desc')
       .limit(limit)
       .offset(limit * (page - 1));
+    if (ids) querySql = querySql.whereIn('id', ids);
     if (status) querySql = querySql.where({ trang_thai: status });
     if (startDate)
       querySql = querySql.where('ngay_lam_don', '>=', new Date(startDate));
