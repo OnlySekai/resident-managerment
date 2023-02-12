@@ -486,7 +486,7 @@ export class HokhauService {
   async rejectNhapKhau(user: UserPayloadDto, id: number) {
     const [don] = await this.database
       .getByIds('don_nhap_khau', id)
-      .where({ status: DON_STATUS.TAO_MOI });
+      .where({ trang_thai: DON_STATUS.TAO_MOI });
     if (!don) throw new NotFoundException('Khong tim thay don');
     return this.database.getByIds('don_nhap_khau', id).update(reject(user));
   }
