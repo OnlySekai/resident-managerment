@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -37,5 +38,10 @@ export class TamvangController {
   @Post(':id')
   acceptTamVang(@Param('id') id, @Req() req) {
     return this.tamVangService.acceptTamVang(id, req.user.userId);
+  }
+
+  @Get('kha-dung')
+  getKhaDung(@Query() query) {
+    return this.tamVangService.getKhaDung
   }
 }

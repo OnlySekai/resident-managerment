@@ -609,7 +609,7 @@ export class HokhauService {
     } = query;
     const ids = getIds(id);
     let querySql = this.database
-      .knex(type)
+      .knex(`${type} as don`)
       .orderBy('ngay_lam_don', 'desc')
       .limit(limit)
       .offset(limit * (page - 1));
@@ -619,6 +619,10 @@ export class HokhauService {
       querySql = querySql.where('ngay_lam_don', '>=', new Date(startDate));
     if (endDate)
       querySql = querySql.where('ngay_lam_don', '<=', new Date(endDate));
+    if (type === 'don_tam_tru' || type === 'don_tam_vang')
+      querySql
+        .innerJoin('nhan_khau as nk', 'nk.id', 'don.nhan_khau_id')
+        .select('nk.*', 'don.*');
     return querySql;
   }
 }

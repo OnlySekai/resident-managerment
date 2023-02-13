@@ -12,6 +12,11 @@ import { pheDuyet } from 'src/utils';
 @Injectable()
 export class TamvangService {
   constructor(private readonly db: DatabaseService) {}
+
+  async getKhaDung(query) {
+    const {endDate} = query
+    return this.db.don_tam_vang_table(true).innerJoin('nhan_khau as nk', 'nk.id', 'dtv.nhan_khau_id').where('')
+  }
   async rejectTamVang(user: UserPayloadDto, id: number) {
     const [don] = await this.db
       .getByIds('don_tam_vang', id)
