@@ -20,7 +20,8 @@ export class ThietbiService {
   async trackBackThietBi(id: number, query: TrackBackQuest) {
     const { startDate, endDate } = query;
     const thietBi = await this.db
-      .phien_su_dung_table()
+      .phien_su_dung_table(true)
+      .where({ tai_nguyen_id: id })
       .whereBetween('ngay_tra', [new Date(startDate), new Date(endDate)]);
     return thietBi.map((phien) => {
       const type = 'Mượn thiết bị';
