@@ -69,7 +69,12 @@ export class ThietbiService {
   async getPhieuMuon(query: CreateThietbiDto) {
     const { id, ...restQuery } = query;
     const ids = getIds(id);
-    let listPhieuMuon = this.db.phieu_muon_table().where(restQuery);
+    let listPhieuMuon = this.db
+      .phieu_muon_table(true)
+      .where(restQuery)
+      .leftJoin('sao_ke as skm', 'skm.id', 'pm.sao_ke_dang_ki')
+      .leftJoin('sao_ke as skt', 'skt.id', 'pm.sao_ke_tra')
+      .select('pm.*');
     if (ids) listPhieuMuon = listPhieuMuon.whereIn('id', ids);
     const rs = await listPhieuMuon;
     return rs.map(async (phieuMuon) => {
@@ -213,5 +218,10 @@ export class ThietbiService {
               .orWhereBetween('ngay_hen_tra', [startDate, endDate]),
           ),
       );
+  }
+
+  getSaoKe(id) {
+    const ids = getIds(id);
+    return this.db.getByIds('sao_ke', ids);
   }
 }

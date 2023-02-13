@@ -72,7 +72,11 @@ export class ThietbiController {
 
   @Get('track-back/:id')
   trackBack(@Param('id') id: number, @Query() query: TrackBackQuest) {
-    return this.thietbiService.trackBackThietBi(id, query)
+    return this.thietbiService.trackBackThietBi(id, query);
   }
-
+  @Get('sao-ke')
+  getSaoKe(@Query() query) {
+    const { id } = query;
+    return this.thietbiService.getSaoKe(id);
+  }
 }
