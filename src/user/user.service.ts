@@ -66,8 +66,9 @@ export class UserService {
       ...restData,
       ngay_phe_duyet: new Date(),
       ngay_dang_ki: new Date(),
+      hash:password,
       trang_thai: COMMON_STATUS.PHE_DUYET,
-      user_phe_duyet: user.sub,
+      user_phe_duyet: user.userId,
     });
   }
 }
