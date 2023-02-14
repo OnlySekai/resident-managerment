@@ -76,7 +76,7 @@ export class ThietbiService {
       .leftJoin('sao_ke as skm', 'skm.id', 'pm.sao_ke_dang_ki')
       .leftJoin('sao_ke as skt', 'skt.id', 'pm.sao_ke_tra')
       .select('pm.*');
-    if (ids) listPhieuMuon = listPhieuMuon.whereIn('id', ids);
+    if (ids) listPhieuMuon = listPhieuMuon.whereIn('pm.id', ids);
     const rs = await listPhieuMuon;
     return rs.map(async (phieuMuon) => {
       phieuMuon['phien_su_dung'] = await this.db
