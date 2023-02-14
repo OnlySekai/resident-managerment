@@ -168,7 +168,8 @@ export class NhankhauService {
     let getNhanKhuQuery = this.db
       .nhan_khau_table()
       .whereRaw(queryName)
-      .whereILike('cccd', cccd ? `%${cccd}%` : '%');
+    if (cccd)
+    getNhanKhuQuery=getNhanKhuQuery.whereILike('cccd', cccd ? `%${cccd}%` : '%');
     if (Number.isInteger(active))
       getNhanKhuQuery = getNhanKhuQuery.where('active', active);
     getNhanKhuQuery = ids
